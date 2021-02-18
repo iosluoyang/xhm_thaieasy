@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Container, Card, CardActions, CardContent, Button, Typography, TextField } from '@material-ui/core'
 import { gethomepagedata } from '../../api/homeapi'
+import store from '../../store'
 
 // 轮播图组件
 function CarouselEl(props) {
@@ -91,6 +92,7 @@ function Home(props) {
 
     useEffect(
         () => {
+
             // 获取首页的数据
             gethomepagedata().then(response => {
                 // 获取首页数据成功

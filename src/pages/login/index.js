@@ -7,10 +7,10 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import LockIcon from '@material-ui/icons/Lock';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-
-import { loginapi } from '../../api/userapi'
 import md5 from 'js-md5';
 
+import store from '../../store'
+import {actionlogin} from '../../store/actionCreator'
 
 function Login(props) {
 
@@ -55,18 +55,17 @@ function Login(props) {
     }
 
     const login = () => {
-        console.log(`username: ${username}   pwd:${pwd}`)
+
         // 调用登录接口
         let data = {
             account: username,
             pwd: md5(pwd)
         }
-        loginapi(data).then(response => {
-            // 登录成功
-            let logindata = response.data
-            console.log(logindata)
+        store.dispatch(actionlogin(data)).then(response => {
+            console.log(`登录成功`)
+            // 登录成功 跳转页面
         }).catch(error => {
-            // 登录失败
+            console.log(error.msg)
         })
     }
 
