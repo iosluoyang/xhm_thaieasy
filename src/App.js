@@ -3,24 +3,20 @@ import './App.css';
 import Layout from './components/layout'
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-class App extends React.Component {
+function App() {
 
-  render() {
-    return (
+  return (
 
-      <React.Fragment>
+    <React.Fragment>
 
-        {/* 基线组件 修复浏览器设备的不一致性 */}
-        <CssBaseline />
+      {/* 基线组件 修复浏览器设备的不一致性 */}
+      <CssBaseline />
 
-        <Layout />
+      <Layout />
 
-      </React.Fragment>
+    </React.Fragment>
 
-    );
-
-  }
-
+  );
 }
 
 export default App;

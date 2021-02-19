@@ -2,6 +2,7 @@ import axios from 'axios'
 import QS from 'qs'; // 引入qs模块，用来序列化post类型的数据
 import md5 from 'js-md5'
 import mobiledevice from 'mobile-device-detect'
+import store from '../store'
 var dayjs = require('dayjs')
 
 let app_key = 'GDYUY38878y897ihhgjY'
@@ -18,20 +19,24 @@ const instance = axios.create({
 // 增加公共报文头
 function makerequestparam(config) {
 
+    const state = store.getState()
+    let appConfig = state.appConfig
+    let appUser = state.appUser
+
     // 设置header的参数
-    config.headers['accessToken'] = '123'
-    config.headers['refreshToken'] = '456'
+    config.headers['accessToken'] = appUser.accessToken || ''
+    config.headers['refreshToken'] = appUser.refreshToken || ''
 
     // 设置公共报文auth的参数
     let auth = {
-        uid: '1',
-        imei: '123456',
+        uid: appUser.user && appUser.user && appUser.user.uid ? appUser.user.uid : '',
+        imei: 'H5-imei-123456',
         os: mobiledevice.osName, // 操作系统
         os_version: mobiledevice.osVersion, // 系统版本号
         devicetype: mobiledevice.deviceType, // 设备类型
         app_version: '1.0.0', // APP版本号
         client_flag: '02', // 请求客户端标识（“01”微信公众号，“02”wap商城(H5)
-        config_version: '1.0.0', // 配置文件的版本号
+        config_version: appConfig.configVersion, // 配置文件的版本号
     }
 
     // 设置签名字符串 使用MD5的方式进行签名，待签名字符串为， timestamp=xxx&app_key 其中app_key为后台提供

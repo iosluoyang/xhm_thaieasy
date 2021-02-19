@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actionLogout } from '../../../store/actionCreator';
 import { useHistory, useLocation } from 'react-router-dom'
 import { makeStyles } from "@material-ui/core/styles";
-import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem } from "@material-ui/core";
+import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Fade from '@material-ui/core/Fade';
@@ -12,6 +15,17 @@ function NavRightPanel(props) {
     let history = useHistory()
 
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const useStyles = makeStyles((theme) => (
+        {
+            small: {
+                width: theme.spacing(3),
+                height: theme.spacing(3),
+            },
+        }
+    ))
+
+    const classes = useStyles()
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -27,6 +41,16 @@ function NavRightPanel(props) {
         history.push('/login')
     }
 
+    const logout = () => {
+        handleClose()
+        // 二次确认
+        props.actionLogout().then(() => {
+            // 登出成功
+        }).catch(error => {
+            // 等出失败
+        })
+    }
+
     return (
         <div>
             <IconButton
@@ -36,7 +60,12 @@ function NavRightPanel(props) {
                 onClick={handleMenu}
                 color="inherit"
             >
-                <AccountCircle />
+                {
+                    props.appUser.user ?
+                    <Avatar className={classes.small} src={ props.appConfig.imgUrl + props.appUser.user.avatar }></Avatar>
+                    :
+                    <AccountCircle />
+                }
             </IconButton>
             <Menu
                 id="menu-appbar"
@@ -46,15 +75,19 @@ function NavRightPanel(props) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleLogin}>登录</MenuItem>
-                <MenuItem onClick={handleClose}>我的账户</MenuItem>
+                {
+                    !props.appUser.user && <MenuItem onClick={handleLogin}>登录</MenuItem>
+                }
+                {
+                    props.appUser.user && <MenuItem onClick={logout}>登出</MenuItem>
+                }
             </Menu>
         </div>
     )
 
 }
 
-function NavBar() {
+function NavBar(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -86,16 +119,17 @@ function NavBar() {
 
             <AppBar position="fixed">
                 <Toolbar>
+
                     {/* 左侧菜单按钮 */}
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={ToggleDrawer}>
                         <MenuIcon />
                     </IconButton>
 
                     {/* 标题 */}
-                    <Typography variant="h6" className={classes.title}>ThaiEasy泰易贝</Typography>
+                    <Typography variant="h6" className={classes.title}>{props.appConfig.appName}</Typography>
 
                     {/* 右侧icon区域 */}
-                    <NavRightPanel></NavRightPanel>
+                    <NavRightPanel {...props}></NavRightPanel>
 
                 </Toolbar>
             </AppBar>
@@ -109,4 +143,12 @@ function NavBar() {
 
 }
 
-export default NavBar;
+const mapStateToProps = (state, ownprops) => {
+    return state
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({actionLogout}, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { connect } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { actionLogin } from '../../store/actionCreator'
+
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton } from '@material-ui/core';
@@ -8,9 +12,6 @@ import LockIcon from '@material-ui/icons/Lock';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import md5 from 'js-md5';
-
-import store from '../../store'
-import {actionlogin} from '../../store/actionCreator'
 
 function Login(props) {
 
@@ -34,6 +35,8 @@ function Login(props) {
 
     }))
     const classes = useStyles()
+
+    const history = useHistory()
 
     const [username, setUserName] = useState('')
     const [pwd, setPwd] = useState('')
@@ -61,17 +64,22 @@ function Login(props) {
             account: username,
             pwd: md5(pwd)
         }
-        store.dispatch(actionlogin(data)).then(response => {
+        props.actionLogin(data).then(response => {
             console.log(`登录成功`)
+            console.log(response.data)
             // 登录成功 跳转页面
+            history.goBack()
         }).catch(error => {
             console.log(error.msg)
         })
+
     }
 
     return (
 
         <Container maxWidth='sm'>
+
+            <h2>{props.appName}</h2>
 
             <form className={classes.root} autoComplete="on">
 
@@ -110,4 +118,15 @@ function Login(props) {
 
 }
 
-export default Login
+const mapStateToProps = (state, ownprops) => {
+    console.log(state)
+    return {
+        appName: state.appConfig.appName
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ actionLogin }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

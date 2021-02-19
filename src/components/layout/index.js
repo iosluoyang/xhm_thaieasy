@@ -11,12 +11,15 @@ import Login from '../../pages/login'
 
 export default function Layout(props) {
 
-    const useStyles = makeStyles({
-        layout: {
-            padding: '80px 0',
+    const useStyles = makeStyles((theme) => {
+        return {
+            layout: {
+                padding: '80px 0',
+            }
         }
     })
     const classes = useStyles()
+
     return (
 
         <Box className={classes.layout}>
@@ -29,12 +32,11 @@ export default function Layout(props) {
 
                 <Switch>
                     <Route exact path="/" component={Home}></Route>
-                    <Route exact path="/content" component={Content}></Route>
-                    <Route exact path="/me" component={Me}></Route>
-
-                    <Route exact path="/login" component={Login}></Route>
+                    <Route path="/content" component={Content}></Route>
+                    <Route path="/me" component={Me}></Route>
+                    <Route path="/login" component={Login}></Route>
                 </Switch>
-
+                
             }
 
             {/* 底部导航 sm尺寸之上隐藏 */}

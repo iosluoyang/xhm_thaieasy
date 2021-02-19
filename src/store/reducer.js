@@ -1,6 +1,6 @@
 // 用户相关的reducer
 import { combineReducers } from 'redux'
-import { UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION } from './actionType'
+import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION } from './actionType'
 
 /*
 
@@ -15,51 +15,66 @@ import { UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION } from './actionTyp
 // 定义默认的state值
 let initialState = {
 
-    config: {
-        configdataarr: null,
-        configversion: null,
-        appname: 'xhm_thaieasy'
+    appConfig: {
+        configVersion: null,
+        configDataArr: null,
+        appName: 'ThaiEasy泰易贝',
+        imgUrl: 'https://procdn.xiaohemu.net/'
     },
-    user: null,
+    appUser: {
+        accessToken: '',
+        refreshToken: '',
+        user: null
+    },
 
 }
 
 // 配置信息相关reducer
-function ConfigReducer(configstate = initialState.config, action) {
+function ConfigReducer(appConfigState = initialState.appConfig, action) {
 
     switch (action.type) {
 
         // 更新配置文件版本号
         case UPDATE_CONFIGVERSION:
-            return { ...configstate, ...{ configdataversion: action.data } }
+            return { ...appConfigState, ...{ configVersion: action.data } }
             break;
 
         // 更新配置文件数据
         case UPDATE_CONFIGARR:
-            return { ...configstate, ...{ configdataarr: action.data } }
+            return { ...appConfigState, ...{ configDataArr: action.data } }
             break;
 
         // 其他情况返回默认的state
         default:
-            return configstate
+            return appConfigState
             break;
     }
 
 }
 
 // 用户相关reducer
-function UserReducer(userstate = initialState.user, action) {
+function UserReducer(appUserState = initialState.appUser, action) {
 
     switch (action.type) {
 
+        // 更新accessToken
+        case UPDATE_ACCESSTOKEN:
+            return {...appUserState,...{accessToken: action.data}}
+            break;
+
+        // 更新refreshToken
+        case UPDATE_REFRESHTOKEN:
+            return {...appUserState,...{refreshToken: action.data}}
+            break;
+
         // 更新用户信息
         case UPDATE_USER:
-            return action.data
+            return {...appUserState,...{user: action.data}}
             break;
 
         // 其他情况返回默认的state
         default:
-            return userstate
+            return appUserState
             break;
     }
 
@@ -68,8 +83,8 @@ function UserReducer(userstate = initialState.user, action) {
 // 整体的reducer
 const AppReducer = combineReducers({
 
-    config: ConfigReducer,
-    user: UserReducer
+    appConfig: ConfigReducer,
+    appUser: UserReducer
 
 })
 
