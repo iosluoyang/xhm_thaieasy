@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Route, Switch, Link } from "react-router-dom";
+import { Switch, Route, Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Hidden } from '@material-ui/core'
 import NavBar from './navbar/index'
@@ -20,6 +20,10 @@ export default function Layout(props) {
     })
     const classes = useStyles()
 
+    const {routes} = props
+
+    console.log(props)
+
     return (
 
         <Box className={classes.layout}>
@@ -29,12 +33,14 @@ export default function Layout(props) {
 
             {/* 中间内容区域 */}
             {
-
                 <Switch>
-                    <Route exact path="/" component={Home}></Route>
-                    <Route path="/content" component={Content}></Route>
-                    <Route path="/me" component={Me}></Route>
-                    <Route path="/login" component={Login}></Route>
+                    {
+                        routes.map((route, index) => {
+                            return (
+                                <Route exact={route.exact} key={index} path={route.path} component={route.component} />
+                            )
+                        })
+                    }
                 </Switch>
                 
             }

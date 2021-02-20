@@ -1,18 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './index.css';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux'
 import store from './store'
-import { BrowserRouter as Router } from 'react-router-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router>
+  <Router>
+    {/* 将store作为prop传入 使应用中的所有组件均可使用store */}
+    <Provider store={store}>
       <App />
-    </Router>
-  </Provider>,
+    </Provider>
+  </Router>,
+  // <App />,
   document.getElementById('root')
 );
 

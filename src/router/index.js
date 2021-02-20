@@ -8,25 +8,29 @@ import Login from '../pages/login'
 let routes = [
 
     {
+        path: '/login',
+        component: Login
+    },
+    {
         path: '/',// 首页默认加载的页面
         component: Layout,// 所使用的组件
-        indexRoute: {component: Layout},
-        exact: true, //是否为严格模式
-        childRoutes: [
+        routes: [
             {
-                path: 'home',
+                path: '/',
                 component: Home,
+                exact: true
             },
             {
-                path: 'content',
+                path: '/content',
                 component: Content,
             },
             {
-                path: 'me',
+                path: '/me',
                 component: Me,
             },
         ]
-    }
+    },
+    
     
 ]
 
