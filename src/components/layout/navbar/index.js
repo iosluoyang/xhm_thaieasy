@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionLogout } from '../../../store/actionCreator';
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Fade from '@material-ui/core/Fade';
 import AppDrawer from '../drawer/index';
@@ -62,9 +63,9 @@ function NavRightPanel(props) {
             >
                 {
                     props.appUser.user ?
-                    <Avatar className={classes.small} src={ props.appConfig.imgUrl + props.appUser.user.avatar }></Avatar>
-                    :
-                    <AccountCircle />
+                        <Avatar className={classes.small} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
+                        :
+                        <AccountCircle />
                 }
             </IconButton>
             <Menu
@@ -89,19 +90,30 @@ function NavRightPanel(props) {
 
 function NavBar(props) {
 
+    let history = useHistory()
+
+    // props的参数 isHome 代表为首页的导航栏
+    const isHome = Boolean(props.isHome) || false
+
     const useStyles = makeStyles((theme) => ({
         root: {
             flexGrow: 1,
+            marginBottom: '56px',
         },
-        menuButton: {
+        leftButton: {
             marginRight: theme.spacing(2),
         },
-        title: {
+        title: (props) => ({
             flexGrow: 1,
-        },
+        })
     }));
 
     const classes = useStyles();
+
+    // 点击返回按钮
+    const goBack = () => {
+        history.goBack()
+    }
 
     // 初始值为关闭drawer
     const [openDrawer, setOpenDrawer] = useState(false)
@@ -120,16 +132,24 @@ function NavBar(props) {
             <AppBar position="fixed">
                 <Toolbar>
 
-                    {/* 左侧菜单按钮 */}
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={ToggleDrawer}>
-                        <MenuIcon />
+                    {/* 左侧按钮 */}
+                    <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'menu'} onClick={isHome ? ToggleDrawer : goBack}>
+                        {
+                            isHome ? <MenuIcon /> : <NavigateBeforeIcon />
+                        }
                     </IconButton>
 
                     {/* 标题 */}
-                    <Typography variant="h6" className={classes.title}>{props.appConfig.appName}</Typography>
+                    <Typography variant="h6" className={classes.title}>
+                        {
+                            isHome ? props.appConfig.appName : (props.navtitle || '')
+                        }
+                    </Typography>
 
-                    {/* 右侧icon区域 */}
-                    <NavRightPanel {...props}></NavRightPanel>
+                    {/* 右侧icon区域 仅首页时有 */}
+                    {
+                        isHome && <NavRightPanel {...props}></NavRightPanel>
+                    }
 
                 </Toolbar>
             </AppBar>
@@ -148,7 +168,7 @@ const mapStateToProps = (state, ownprops) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({actionLogout}, dispatch)
+    return bindActionCreators({ actionLogout }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

@@ -4,9 +4,14 @@ import Home from '../pages/home'
 import Content from '../pages/content'
 import Me from '../pages/me'
 import Login from '../pages/login'
+import Register from '../pages/register'
 
 let routes = [
 
+    {
+        path: '/register',
+        component: Register
+    },
     {
         path: '/login',
         component: Login
@@ -30,8 +35,8 @@ let routes = [
             },
         ]
     },
-    
-    
+
+
 ]
 
 export default routes

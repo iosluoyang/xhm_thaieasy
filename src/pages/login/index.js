@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { actionLogin } from '../../store/actionCreator'
-
-import { useHistory } from 'react-router-dom';
-import clsx from 'clsx';
-import { Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton } from '@material-ui/core';
+import { actionLogin } from '../../store/actionCreator';
+import NavBar from "../../components/layout/navbar";
+import { Box, Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import utils from '../../utils';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import LockIcon from '@material-ui/icons/Lock';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import md5 from 'js-md5';
@@ -19,37 +18,19 @@ function Login(props) {
     const useStyles = makeStyles(theme => ({
 
         root: {
-            '& > *': {
-                margin: theme.spacing(1),
-                width: '25ch',
-            },
+            paddingTop: '30px'
         },
-        margin: {
-            margin: theme.spacing(1),
-        },
-        withoutLabel: {
-            marginTop: theme.spacing(3),
-        },
-        textField: {
-            width: '25ch',
-        },
-
+        width100: {
+            width: '100%'
+        }
     }))
     const classes = useStyles()
 
     const history = useHistory()
 
-    const [username, setUserName] = useState('')
+    const [userName, setUserName] = useState('')
     const [pwd, setPwd] = useState('')
-    const [showpwd, setShowPwd] = useState(false)
-
-    const handleClickShowPassword = () => {
-        setShowPwd(!showpwd)
-    };
-
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
+    const [showPwd, setShowPwd] = useState(false)
 
     const typeUserName = (event) => {
         setUserName(event.target.value)
@@ -58,110 +39,135 @@ function Login(props) {
         setPwd(event.target.value)
     }
 
+    // 注册账号
+    const registerAccount = () => {
+        history.push('/register')
+    }
+
+    // 忘记密码
+    const forgetPwd = () => {
+        history.push('/editPwd:type')
+    }
+
     const login = () => {
+
+        // 检查数据
+        if (!userName) {
+            utils.showToast('请输入账号', 'info')
+            return
+        }
+        else if (!pwd) {
+            utils.showToast('请输入密码', 'info')
+            return
+        }
 
         // 调用登录接口
         let data = {
-            account: username,
+            account: userName,
             pwd: md5(pwd)
         }
         props.actionLogin(data).then(response => {
-            console.log(`登录成功`)
-            console.log(response.data)
+            utils.showToast('登录成功', 'success')
             // 登录成功 跳转页面
             history.goBack()
         }).catch(error => {
-            console.log(error.msg)
+            utils.showToast(error.msg || error, 'error')
         })
 
     }
 
     return (
 
-        <Container maxWidth='sm'>
+        <Box className={classes.root}>
 
-            <h2>{props.appName}</h2>
+            {/* 导航栏 */}
+            <NavBar navtitle={`登录`}></NavBar>
 
-            <Grid container spacing={2} direction='column' justify="center">
+            {/* 填写的内容区域 */}
+            <Container maxWidth='sm'>
 
-                {/* 账号 */}
-                <Grid container spacing={1} justify="center" alignItems="center">
-                      <Grid item>
-                        <AccountBoxIcon />
-                      </Grid>
-                      <Grid item>
-                        <TextField id="account" label="用户名" value={username} onChange={typeUserName} />
-                      </Grid>
+                {/* 登录填写的内容区域 */}
+                <Grid container direction='column' spacing={3} justify="flex-start" alignItems='stretch'>
+
+                    {/* 账号 */}
+                    <Grid item>
+
+                        <Grid container spacing={2} justify="center" alignItems="flex-end">
+                            <Grid item xs={2}>
+                                <AccountBoxIcon />
+                            </Grid>
+                            <Grid item xs={9}>
+                                <TextField id="account" label={`用户名`} value={userName} onChange={typeUserName} />
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+
+                    {/* 密码 */}
+                    <Grid item>
+
+                        <Grid container spacing={2} justify="center" alignItems="flex-end">
+
+                            <Grid item xs={2}>
+                                <VpnKeyIcon />
+                            </Grid>
+                            <Grid item xs={9}>
+
+                                {/* 密码 */}
+                                <FormControl>
+                                    <InputLabel>{`密码`}</InputLabel>
+                                    <Input
+                                        type={showPwd ? 'text' : 'password'}
+                                        value={pwd}
+                                        onChange={typePwd}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={() => { setShowPwd(!showPwd) }}
+                                                    onMouseDown={() => { setShowPwd(!showPwd) }}
+                                                >
+                                                    {showPwd ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                    />
+                                </FormControl>
+
+                            </Grid>
+
+                        </Grid>
+
+                    </Grid>
+
+                    {/* 注册&忘记密码 */}
+                    <Grid item>
+                        <Grid container justify='space-between' alignItems='center'>
+
+                            {/* 注册 */}
+                            <Grid item xs={5}>
+                                <Button className={classes.width100} onClick={registerAccount}>{`注册账号`}</Button>
+                            </Grid>
+
+                            {/* 忘记密码 */}
+                            <Grid item xs={5}>
+                                <Button className={classes.width100} onClick={forgetPwd}>{`忘记密码`}</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    {/* 登录按钮 */}
+                    <Grid item>
+                        <Button className={classes.width100} variant="contained" color="primary" onClick={login} >
+                            {`登录`}
+                        </Button>
+                    </Grid>
+
                 </Grid>
 
-                {/* 密码 */}
-                <Grid spacing={1} justify="center" alignItems="center">
-                      <Grid item>
-                        <VpnKeyIcon />
-                      </Grid>
-                      <Grid item>
+            </Container>
 
-                        {/* 密码 */}
-                        <FormControl className={clsx(classes.margin, classes.textField)}>
-                            <InputLabel>Password</InputLabel>
-                            <Input
-                                type={showpwd ? 'text' : 'password'}
-                                value={pwd}
-                                onChange={typePwd}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                        >
-                                            {showpwd ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </FormControl>
-                        
-                      </Grid>
-                </Grid>
-
-
-            </Grid>
-
-            
-
-            <form className={classes.root} autoComplete="on">
-
-                {/* 账号 */}
-                <TextField id="input-with-icon-grid" label="UserName" value={username} onChange={typeUserName} />
-
-                {/* 密码 */}
-                <FormControl className={clsx(classes.margin, classes.textField)}>
-                    <InputLabel>Password</InputLabel>
-                    <Input
-                        type={showpwd ? 'text' : 'password'}
-                        value={pwd}
-                        onChange={typePwd}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                >
-                                    {showpwd ? <Visibility /> : <VisibilityOff />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                    />
-                </FormControl>
-
-                <Button variant="contained" color="primary" onClick={login} >
-                    登录
-                </Button>
-            </form>
-
-        </Container>
+        </Box>
 
     )
 

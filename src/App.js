@@ -1,40 +1,39 @@
 import React from "react";
 import { Switch, Route } from 'react-router-dom';
-import routers from './router'
-import { Provider } from 'react-redux'
-import store from './store'
+import routes from './router'
 import './App.css';
-
-
-import Layout from './components/layout'
-import Home from './pages/home'
-import Content from './pages/content'
-import Me from './pages/me'
-import Login from './pages/login'
+import GlobalSnackbar from './components/globalSnackbar';
+import GlobalDialog from "./components/globalDialog";
 
 function App() {
 
   return (
 
     <div className="App">
-        
-        {
-            <Switch>
-              {
-                routers.map((route, index) => {
-                  return (
-    
-                    <Route key={index} exact={route.exact} path={route.path}
-                            render = { props => (
-                              // 传递嵌套路由到子组件
-                              <route.component {...props} routes={route.routes} />
-                            )}
-                    ></Route>
-                  )
-                })
-              }
-            </Switch>
-        }
+
+      {/* 全局Toast框 */}
+      <GlobalSnackbar />
+      {/* 全局Dialog框 */}
+      <GlobalDialog />
+
+      {
+        <Switch>
+          {
+            routes.map((route, index) => {
+              return (
+
+                <Route key={index} exact={route.exact} path={route.path}
+                  render={props => (
+                    // 传递嵌套路由到子组件
+                    <route.component {...props} routes={route.routes} />
+                  )}
+                ></Route>
+              )
+            })
+          }
+        </Switch>
+      }
+
     </div>
 
   );
