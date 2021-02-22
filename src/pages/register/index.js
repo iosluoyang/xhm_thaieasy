@@ -36,6 +36,8 @@ export default function Register(props) {
     const [userName, setUserName] = useState('')
     const [pwd, setPwd] = useState('')
     const [showPwd, setShowPwd] = useState(false)
+    const [confirmPwd, setConfirmPwd] = useState('')
+    const [showConfirmPwd, setShowConfirmPwd] = useState(false)
 
     const typeEmail = (e) => {
         setEmail(e.target.value)
@@ -49,6 +51,9 @@ export default function Register(props) {
     const typePwd = (e) => {
         setPwd(e.target.value)
     }
+    const typeConfirmPwd = (e) => {
+        setConfirmPwd(e.target.value)
+    }
 
     // 注册事件
     const register = () => {
@@ -58,12 +63,12 @@ export default function Register(props) {
             utils.showToast(`请输入邮箱`, 'info')
             return
         }
-        else if (!userName) {
-            utils.showToast(`请输入昵称`, 'info')
+        else if (!pwd || !confirmPwd) {
+            utils.showToast(`请输入密码`, 'info')
             return
         }
-        else if (!pwd) {
-            utils.showToast(`请输入密码`, 'info')
+        else if (pwd !== confirmPwd) {
+            utils.showToast(`两次密码不一致`, 'info')
             return
         }
 
@@ -101,7 +106,7 @@ export default function Register(props) {
             {/* 填写的内容区域 */}
             <Container maxWidth='sm'>
 
-                {/* 登录填写的内容区域 */}
+                {/* 注册填写的内容区域 */}
                 <Grid container direction='column' spacing={3} justify="flex-start" alignItems='stretch'>
 
                     {/* 邮箱 */}
@@ -112,8 +117,78 @@ export default function Register(props) {
                                 <MailOutlineIcon />
                             </Grid>
                             <Grid item xs={9}>
-                                <TextField id="email" variant='outlined' label={`邮箱`} value={email} onChange={typeEmail} />
+                                <TextField required id="email" variant='outlined' label={`邮箱`} value={email} onChange={typeEmail} />
                             </Grid>
+                        </Grid>
+
+                    </Grid>
+
+                    {/* 密码 */}
+                    <Grid item>
+
+                        <Grid container spacing={2} justify="center" alignItems="flex-end">
+
+                            <Grid item xs={2}>
+                                <VpnKeyIcon />
+                            </Grid>
+                            <Grid item xs={9}>
+
+                                {/* 密码 */}
+                                <FormControl required>
+                                    <InputLabel>{`密码`}</InputLabel>
+                                    <Input
+                                        type={showPwd ? 'text' : 'password'}
+                                        value={pwd}
+                                        onChange={typePwd}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={() => { setShowPwd(!showPwd) }}
+                                                    onMouseDown={() => { setShowPwd(!showPwd) }}
+                                                >
+                                                    {showPwd ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                    />
+                                </FormControl>
+
+                            </Grid>
+
+                        </Grid>
+
+                    </Grid>
+                    
+                    {/* 密码确认 */}
+                    <Grid item>
+                        
+                        <Grid container spacing={2} justify="center" alignItems="flex-end">
+
+                            <Grid item xs={2}>
+                                <VpnKeyIcon />
+                            </Grid>
+                            <Grid item xs={9}>
+                                {/* 确认密码 */}
+                                <FormControl required>
+                                    <InputLabel>{`确认密码`}</InputLabel>
+                                    <Input type={showConfirmPwd ? 'text' : 'password'}
+                                            value={confirmPwd}
+                                            onChange={typeConfirmPwd}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton onClick={() => { setShowConfirmPwd(!showConfirmPwd) }}
+                                                                 onMouseDown={() => { setShowConfirmPwd(!showConfirmPwd) }}
+                                                    >
+                                                                
+                                                        { showConfirmPwd ? <Visibility /> : <VisibilityOff /> }
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                    ></Input>
+                                </FormControl>
+                            </Grid>
+
                         </Grid>
 
                     </Grid>
@@ -142,43 +217,6 @@ export default function Register(props) {
                             <Grid item xs={9}>
                                 <TextField id="username" variant='outlined' label={`用户名`} value={userName} onChange={typeUserName} />
                             </Grid>
-                        </Grid>
-
-                    </Grid>
-
-                    {/* 密码 */}
-                    <Grid item>
-
-                        <Grid container spacing={2} justify="center" alignItems="flex-end">
-
-                            <Grid item xs={2}>
-                                <VpnKeyIcon />
-                            </Grid>
-                            <Grid item xs={9}>
-
-                                {/* 密码 */}
-                                <FormControl>
-                                    <InputLabel>{`密码`}</InputLabel>
-                                    <Input
-                                        type={showPwd ? 'text' : 'password'}
-                                        value={pwd}
-                                        onChange={typePwd}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={() => { setShowPwd(!showPwd) }}
-                                                    onMouseDown={() => { setShowPwd(!showPwd) }}
-                                                >
-                                                    {showPwd ? <Visibility /> : <VisibilityOff />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                    />
-                                </FormControl>
-
-                            </Grid>
-
                         </Grid>
 
                     </Grid>

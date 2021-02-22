@@ -115,18 +115,6 @@ function Home(props) {
 
             <h1>你好</h1>
 
-            {/* 轮播图 */}
-            {
-                state.carouselArr && state.carouselArr.length > 0 ?
-                    <CarouselEl dataArr={state.carouselArr}></CarouselEl> : null
-            }
-
-            {/* 通知卡片内容 */}
-            <NoticeList dataArr={state.noticeList}></NoticeList>
-
-            {/* 搜索框 */}
-            <TextField id="standard-basic" label="搜索您想要的商品" />
-
 
         </Container>
 
