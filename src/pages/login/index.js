@@ -174,7 +174,6 @@ function Login(props) {
 }
 
 const mapStateToProps = (state, ownprops) => {
-    console.log(state)
     return {
         appName: state.appConfig.appName
     }

@@ -1,29 +1,89 @@
-import React from 'react'
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles'
-import clsx from 'clsx'
-import { AccessAlarm, ThreeDRotation } from '@material-ui/icons';
-
-const useStyles = makeStyles((theme) => ({
-    list: {
-        width: 250,
-    },
-    fullList: {
-        width: 'auto'
-    }
-}))
+import React, { useState } from 'react';
+import { connect } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { useHistory} from 'react-router-dom';
+import { updateAppDrawerOpen, actionLogout } from '../../../store/actionCreator';
+import utils from '../../../utils';
+import { Box, SwipeableDrawer,Avatar, Chip, List, ListItem, ListItemIcon, ListItemText, Divider } from "@material-ui/core";
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import { AccessAlarm, ThreeDRotation, AccountCircle } from '@material-ui/icons';
 
 function AppDrawer(props) {
 
+    let history = useHistory()
+
+    const useStyles = makeStyles((theme) => ({
+        avatar: {
+            width: theme.spacing(6),
+            height: theme.spacing(6),
+        },
+        list: {
+            width: 250,
+        },
+        fullList: {
+            width: 'auto'
+        }
+    }))
+
     const classes = useStyles()
+    const theme = useTheme()
+
+    const originalFirstDataList = [
+        {
+            icon: <AccessAlarm />,
+            title: `${'首页'}`,
+            link: '/'
+        },
+        {
+            icon: <AccessAlarm />,
+            title: `${'如何使用'}`,
+            link: '/article/123'
+        },
+        {
+            icon: <AccessAlarm />,
+            title: `${'联系我们'}`,
+            link: '/contactus'
+        },
+        {
+            icon: <AccessAlarm />,
+            title: `${'加入我们'}`,
+            link: '/joinus'
+        }
+    ]
+    const [dataList1, setDataList1] = useState(originalFirstDataList)
+
+    // 点击列表项
+    const clickListItem = (listitem) => (event) => {
+        // 根据link属性进行跳转
+        history.push(listitem.link)
+    }
 
     // 点击关闭drawer
-    const toggleDrawer = () => (event) => {
-        props.onToggleDrawer(false)
+    const toggleDrawer = (appDrawerOpen) => (event) => {
+        props.updateAppDrawerOpen(appDrawerOpen)
+    }
+
+    // 点击跳转登录
+    const toLogin = () => {
+        // 关闭抽屉
+        history.push('/login')
+    }
+
+    // 登出
+    const toLogout = () => {
+        // 二次确认
+        props.actionLogout().then(() => {
+            // 登出成功
+            utils.showToast(`登出成功`, 'success')
+        }).catch(error => {
+            // 登出失败
+            utils.showToast(`登出失败`, 'fail')
+        })
     }
 
     const list = (direction) => (
-        <div
+        <Box
             className={clsx(classes.list, {
                 [classes.fullList]: direction === 'top' || direction === 'bottom',
             })}
@@ -31,31 +91,84 @@ function AppDrawer(props) {
             onClick={toggleDrawer(false)}
             onKeyDown={toggleDrawer(false)}
         >
-            <List>
-                {['Index1', 'Index2', 'Index3', 'Index4'].map((text, index) => (
-                    <ListItem button key={index}>
-                        <ListItemIcon>{index % 2 === 0 ? <AccessAlarm /> : <ThreeDRotation />}</ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
-            </List>
+
+            {/* 用户信息区域 */}
+            <Box className='drawerUserDiv'>
+                {
+                    props.appUser.user ?
+
+                    // 登录状态下
+                    <Box display='flex' padding='10%' flexDirection='column' justifyContent='flex-start' alignItems='center'>
+                        {/* 用户头像 */}
+                        <Avatar className={classes.avatar} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
+                        {/* 用户名称 */}
+                        <Box marginY={2} textAlign='center' fontSize='15px' lineHeight='20px' whiteSpace='normal'>
+                            {`${props.appUser.user.userName}`}
+                            {/* 用户标识 */}
+                            <Chip size='small' style={{marginLeft: theme.spacing(2)}} label={ props.appUser.user.type === 0 ? `${'管理员'}` : props.appUser.user.type === 1 ? `${'客服'}` : `${'普通用户'}` }></Chip>
+                        </Box>
+                    </Box>
+                    :
+                    // 未登录状态下
+                    <Box display='flex' padding='10%' flexDirection='column' justifyContent='flex-start' alignItems='center' onClick={toLogin}>
+                        {/* 默认头像 */}
+                        <AccountCircle fontSize='large' />
+                        {/* 默认名称 */}
+                        <Box marginTop={2} textAlign='center' fontSize='15px' lineHeight='20px' borderBottom={1} borderColor='#ededed' whiteSpace='normal'>{`请先登录`}</Box>
+                    </Box>
+
+                }
+            </Box>
+            
             <Divider />
-            <List>
-                {['Index5', 'Index6', 'Index7'].map((text, index) => (
-                    <ListItem button key={index}>
-                        <ListItemIcon>{index % 2 === 0 ? <AccessAlarm /> : <ThreeDRotation />}</ListItemIcon>
-                        <ListItemText primary={text} />
+
+            {/* 列表区域 */}
+            <List className="firstList">
+                {dataList1.map((listitem, index) => (
+                    <ListItem button key={index} onClick={clickListItem(listitem)}>
+                        <ListItemIcon>{listitem.icon}</ListItemIcon>
+                        <ListItemText primary={listitem.title} />
                     </ListItem>
                 ))}
             </List>
-        </div>
+            
+            <List>
+
+                <Divider />
+
+                {
+                    props.appUser.user &&
+                    <ListItem button>
+                        <ListItemIcon><AccessAlarm /></ListItemIcon>
+                        <ListItemText primary={`${'设置'}`} />
+                    </ListItem>
+                }
+
+                {
+                    props.appUser.user && 
+                    <ListItem button onClick={toLogout}>
+                        <ListItemIcon><AccessAlarm /></ListItemIcon>
+                        <ListItemText primary={`${'退出'}`} />
+                    </ListItem>
+                }
+
+            </List>
+        </Box>
     )
 
     return (
-        <Drawer anchor={props.direction} open={props.open} onClose={toggleDrawer(false)}>
+        <SwipeableDrawer anchor={props.direction} open={props.appConfig.appDrawerOpen} onOpen={toggleDrawer(true)} onClose={toggleDrawer(false)}>
             {list(props.direction)}
-        </Drawer>
+        </SwipeableDrawer>
     )
 }
 
-export default AppDrawer
+const mapStateToProps = (state, ownprops) => {
+    return {...ownprops, ...state}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({actionLogout, updateAppDrawerOpen}, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppDrawer)

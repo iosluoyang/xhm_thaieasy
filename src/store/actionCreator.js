@@ -1,5 +1,5 @@
 import store from './index'
-import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION } from './actionType'
+import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION, UPDATE_APPDRAWEROPEN } from './actionType'
 import { loginapi, logoutapi } from '../api/userapi'
 
 // 更新配置文件版本号的action创建函数
@@ -15,6 +15,14 @@ export function updateConfigArr(configArr) {
     return {
         type: UPDATE_CONFIGARR,
         data: configArr
+    }
+}
+
+// 更新APP全局抽屉的打开状态
+export function updateAppDrawerOpen(openStatus) {
+    return {
+        type: UPDATE_APPDRAWEROPEN,
+        data: openStatus
     }
 }
 

@@ -1,112 +1,63 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actionLogout } from '../../../store/actionCreator';
+import { actionLogout, updateAppDrawerOpen } from '../../../store/actionCreator';
 import { useHistory } from 'react-router-dom'
+import utils from '../../../utils';
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, AppBar, Toolbar, Hidden, Grid, GridList, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
+import {Box, AppBar, Toolbar, Hidden, Link, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
+import logoImg from '../../../assets/imgs/logo.png';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Fade from '@material-ui/core/Fade';
-import AppDrawer from '../drawer/index';
 
-function NavRightPanel(props) {
+// 导航栏链接组件
+function NavLinkPanel(props) {
 
-    let history = useHistory()
-
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const useStyles = makeStyles((theme) => ({
-
-            rightPanel: {
-
-            },
-            small: {
-                width: theme.spacing(3),
-                height: theme.spacing(3),
-            },
-        }))
-
-    const classes = useStyles()
-
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleLogin = () => {
-        handleClose()
-        // 跳转登录页面
-        history.push('/login')
-    }
-
-    const logout = () => {
-        handleClose()
-        // 二次确认
-        props.actionLogout().then(() => {
-            // 登出成功
-        }).catch(error => {
-            // 等出失败
-        })
-    }
+    let list = [
+        {
+            title: `首页`,
+            type: 0, // 0 应用内链接  1应用外链接
+            link: '/',
+        },
+        {
+            title: `如何使用`,
+            type: 0, // 0 应用内链接  1应用外链接
+            link: '/article/123',
+        },
+        {
+            title: `联系我们`,
+            type: 0, // 0 应用内链接  1应用外链接
+            link: '/contactus',
+        },
+        {
+            title: `管理系统`,
+            type: 1, // 0 应用内链接  1应用外链接
+            link: 'https://www.baidu.com',
+        }
+    ]
+    const [navList, setNavList] = useState(list)
 
     return (
 
-        // 右侧区域
-        <Box className={classes.rightPanel}>
+        // 右侧导航区域
+        <Box display='flex' px='20%' flexWrap='nowrap' flexGrow={1} justifyContent='space-around' alignItems='center'>
 
-            {/* 导航栏 */}
-            <Grid container justify='space-between' alignItems='center'>
-
-                <Grid item>首页</Grid>
-                <Grid item>商品分类</Grid>
-                <Grid item>联系我们</Grid>
-                <Grid item>加入我们</Grid>
-
-            </Grid>
-
-            {/* 按钮区域 */}
-            <Hidden smUp>
-                <IconButton
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleMenu}
-                    color="inherit"
-                >
-                    {
-                        props.appUser.user ?
-                            <Avatar className={classes.small} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
-                            :
-                            <AccountCircle />
-                    }
-                </IconButton>
-                <Menu
-                    id="menu-appbar"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    TransitionComponent={Fade}
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                >
-                    {
-                        !props.appUser.user && <MenuItem onClick={handleLogin}>登录</MenuItem>
-                    }
-                    {
-                        props.appUser.user && <MenuItem onClick={logout}>登出</MenuItem>
-                    }
-                </Menu>
-            </Hidden>
+            {
+                navList.map((navitem, index) => {
+                    return (
+                        <Link href={navitem.link} target={ navitem.type === 1 ? '_black' : '' } key={index} color="inherit">{navitem.title}</Link>
+                    )
+                })
+            }
 
         </Box>
     )
 
 }
 
+// 导航栏组件
 function NavBar(props) {
 
     let history = useHistory()
@@ -116,79 +67,146 @@ function NavBar(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            flexGrow: 1,
             marginBottom: '56px',
+        },
+        logo: {
+            width: '50px',
+            height: '50px',
+            marginRight: theme.spacing(2)
         },
         leftButton: {
             marginRight: theme.spacing(2),
         },
-        title: (props) => ({
-            flexGrow: 1,
-        })
+        avatar: {
+            width: theme.spacing(5),
+            height: theme.spacing(5),
+        },
     }));
 
-    const classes = useStyles();
+    const classes = useStyles()
+
+    // 点击菜单按钮打开/关闭抽屉
+    const clickDrawer = () => {
+        // 抽屉状态取反
+        let appDrawerOpen = props.appConfig.appDrawerOpen
+        props.updateAppDrawerOpen(!appDrawerOpen)
+    }
+
+    const toHomePage = () => {
+        history.replace('/')
+    }
 
     // 点击返回按钮
     const goBack = () => {
         history.goBack()
     }
 
-    // 初始值为关闭drawer
-    const [openDrawer, setOpenDrawer] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null)
 
-    // 子组件关闭传递当前开关状态
-    const ToggleDrawer = (open) => {
+    const openMenu = (event) => {
+        setAnchorEl(event.currentTarget)
+    };
 
-        // 将当前状态取反
-        setOpenDrawer(!openDrawer)
+    const closeMenu = () => {
+        setAnchorEl(null)
+    };
+
+    const toLogin = () => {
+        closeMenu()
+        // 跳转登录页面
+        history.push('/login')
+    }
+
+    const toLogout = () => {
+        closeMenu()
+        // 二次确认
+        props.actionLogout().then(() => {
+            // 登出成功
+            utils.showToast(`登出成功`, 'success')
+        }).catch(error => {
+            // 登出失败
+            utils.showToast(`登出失败`, 'fail')
+        })
     }
 
     return (
 
-        <Box className={classes.root}>
+        <div className={classes.root} >
 
             <AppBar position="fixed">
                 <Toolbar>
 
-                    {/* 左侧菜单按钮 sm以上隐藏 */}
-                    <Hidden smUp>
-                        <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'menu'} onClick={isHome ? ToggleDrawer : goBack}>
-                            {
-                                isHome ? <MenuIcon /> : <NavigateBeforeIcon />
-                            }
-                        </IconButton>
+                    {/* 左侧菜单按钮 md以上隐藏 */}
+                    <Hidden mdUp>
+                        <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'Menu'} onClick={isHome ? clickDrawer : goBack}>{ isHome ? <MenuIcon /> : <NavigateBeforeIcon /> }</IconButton>
                     </Hidden>
-                   
 
+                    {/* logo  md以下隐藏 */}
+                    <Hidden mdDown>
+                        <img className={classes.logo} src={logoImg} alt={props.appConfig.appName} onClick={toHomePage} />
+                    </Hidden>
+                    
                     {/* 标题 */}
-                    <Typography variant="h6" className={classes.title}>
-                        {
-                            isHome ? props.appConfig.appName : (props.navtitle || '')
-                        }
-                    </Typography>
+                    <Typography variant="h6">{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
 
-                    {/* 右侧区域 */}
-                    <NavRightPanel {...props}></NavRightPanel>
+                    {/* 导航区域 md以下隐藏 */}
+                    <Hidden mdDown>
+                        {<NavLinkPanel {...props}></NavLinkPanel>}
+                    </Hidden>
+
+                    {/* 右侧按钮区域  md以下隐藏*/}
+                    <Hidden mdDown>
+                        <Box display='flex' justifyContent='flex-end' alignItems='center' className='btndiv'>
+                            {/* 用户头像按钮 */}
+                            <IconButton
+                                aria-label="User"
+                                aria-controls="account-appbar"
+                                aria-haspopup="true"
+                                onClick={openMenu}
+                                color="inherit"
+                            >
+                                {
+                                    props.appUser.user ?
+                                        <Avatar className={classes.avatar} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
+                                        :
+                                        <AccountCircle />
+                                }
+                            </IconButton>
+                            
+                            {/* 弹出popup的menu */}
+                            <Menu
+                                id="account-appbar"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                TransitionComponent={Fade}
+                                open={Boolean(anchorEl)}
+                                onClose={closeMenu}
+                            >
+                                {
+                                    !props.appUser.user && <MenuItem onClick={toLogin}>登录</MenuItem>
+                                }
+                                {
+                                    props.appUser.user && <MenuItem onClick={toLogout}>登出</MenuItem>
+                                }
+                            </Menu>
+                        </Box>
+                    </Hidden>
 
                 </Toolbar>
             </AppBar>
 
-            {/* 侧边栏弹出框 */}
-            <AppDrawer direction="left" open={openDrawer} onToggleDrawer={ToggleDrawer}></AppDrawer>
-
-        </Box>
+        </div>
 
     )
 
 }
 
 const mapStateToProps = (state, ownprops) => {
-    return state
+    return {...ownprops, ...state}
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ actionLogout }, dispatch)
+    return bindActionCreators({ actionLogout,updateAppDrawerOpen }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

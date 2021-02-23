@@ -1,6 +1,6 @@
 // 用户相关的reducer
 import { combineReducers } from 'redux'
-import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION } from './actionType'
+import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION, UPDATE_APPDRAWEROPEN } from './actionType'
 
 /*
 
@@ -19,7 +19,8 @@ let initialState = {
         configVersion: null,
         configDataArr: null,
         appName: 'ThaiEasy泰易贝',
-        imgUrl: 'https://procdn.xiaohemu.net/'
+        imgUrl: 'https://procdn.xiaohemu.net/',
+        appDrawerOpen: false, // 全局左侧抽屉的开关
     },
     appUser: {
         accessToken: '',
@@ -42,6 +43,11 @@ function ConfigReducer(appConfigState = initialState.appConfig, action) {
         // 更新配置文件数据
         case UPDATE_CONFIGARR:
             return { ...appConfigState, ...{ configDataArr: action.data } }
+            break;
+
+        // 更新全局抽屉的打开状态
+        case UPDATE_APPDRAWEROPEN:
+            return { ...appConfigState, ...{ appDrawerOpen: action.data }}
             break;
 
         // 其他情况返回默认的state
