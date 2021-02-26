@@ -7,7 +7,7 @@ import utils from '../../../utils';
 import { Box, SwipeableDrawer,Avatar, Chip, List, ListItem, ListItemIcon, ListItemText, Divider } from "@material-ui/core";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { AccessAlarm, ThreeDRotation, AccountCircle } from '@material-ui/icons';
+import { AccountCircle, Home, LiveHelp, ContactSupport, CardGiftcard, Settings, ExitToApp } from '@material-ui/icons';
 
 function AppDrawer(props) {
 
@@ -31,22 +31,22 @@ function AppDrawer(props) {
 
     const originalFirstDataList = [
         {
-            icon: <AccessAlarm />,
+            icon: <Home />,
             title: `${'首页'}`,
             link: '/'
         },
         {
-            icon: <AccessAlarm />,
+            icon: <LiveHelp />,
             title: `${'如何使用'}`,
             link: '/article/123'
         },
         {
-            icon: <AccessAlarm />,
+            icon: <ContactSupport />,
             title: `${'联系我们'}`,
             link: '/contactus'
         },
         {
-            icon: <AccessAlarm />,
+            icon: <CardGiftcard />,
             title: `${'加入我们'}`,
             link: '/joinus'
         }
@@ -73,13 +73,20 @@ function AppDrawer(props) {
     // 登出
     const toLogout = () => {
         // 二次确认
-        props.actionLogout().then(() => {
-            // 登出成功
-            utils.showToast(`登出成功`, 'success')
-        }).catch(error => {
-            // 登出失败
-            utils.showToast(`登出失败`, 'fail')
+        utils.showDialog(`${''}`,`${'确定登出吗?'}`,'confirm', (data) => {
+            if(data.type == 'confirm') {
+                // 进行登出
+                props.actionLogout().then(() => {
+                // 登出
+                utils.showToast(`登出成功`, 'success')}).catch(error => {utils.showToast(`登出失败`, 'fail')})
+            }
         })
+        
+    }
+
+    // 跳转设置页面
+    const toSetting = () => {
+        history.push('/setting')
     }
 
     const list = (direction) => (
@@ -138,8 +145,8 @@ function AppDrawer(props) {
 
                 {
                     props.appUser.user &&
-                    <ListItem button>
-                        <ListItemIcon><AccessAlarm /></ListItemIcon>
+                    <ListItem button onClick={toSetting}>
+                        <ListItemIcon><Settings /></ListItemIcon>
                         <ListItemText primary={`${'设置'}`} />
                     </ListItem>
                 }
@@ -147,7 +154,7 @@ function AppDrawer(props) {
                 {
                     props.appUser.user && 
                     <ListItem button onClick={toLogout}>
-                        <ListItemIcon><AccessAlarm /></ListItemIcon>
+                        <ListItemIcon><ExitToApp /></ListItemIcon>
                         <ListItemText primary={`${'退出'}`} />
                     </ListItem>
                 }
