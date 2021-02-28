@@ -1,26 +1,126 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Container, Card, CardActions, CardContent, Button, Typography, TextField } from '@material-ui/core'
+import { Box, MobileStepper, Card, CardActions, CardContent, Button, Typography, TextField } from '@material-ui/core'
+import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons'
 import { gethomepagedata } from '../../api/homeapi'
 import store from '../../store'
+import SwipeableViews from 'react-swipeable-views';
+import { autoPlay } from 'react-swipeable-views-utils';
 
 // 轮播图组件
 function CarouselEl(props) {
 
-    const useStyles = makeStyles(theme => ({
-        spacecarousel: {
+    const history = useHistory()
+    const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
+    const useStyles = makeStyles(theme => ({
+
+        carousel: {
+            width: '100%',
+            height: props.carouselHeight,
+            position: 'relative',
+            '& .topview': {
+                width: '100%',
+                height: '100%',
+                '& .react-swipeable-view-container': {
+                    height: '100%'
+                },
+                '& .eachslide': {
+    
+                    width: '100%',
+                    height: '100%',
+    
+                    '& .img': {
+                        width: '100%',
+                        height: '100%',
+                        display: 'block',
+                    }
+                },
+            },
+            '& .bottomview': {
+                height: '20px',
+                bottom: '0',
+                left: '0',
+                right: '0'
+            }
+            
         }
     }))
+
     const classes = useStyles()
     const theme = useTheme()
 
-    const [slideIndex, setSlideIndex] = useState(0)
-    const [imgHeight, setImgHeight] = useState(200)
+    const [activeIndex, setActiveIndex] = useState(0)
+
+    const clickSlide = (eachitem) => (event) => {
+        
+        let type = eachitem.type // 跳转类型 1跳转链接   2公告详情   3商品详情   -99代表无跳转
+        let value = eachitem.value
+        // 根据不同的类型跳转不同的页面
+        switch (type) {
+            // 跳转链接
+            case 1:
+                // location.href = value
+                break;
+            // 跳转公告
+            case 2:
+                history.push(`/noticeDetail?id=${value}`)
+                break;
+            // 商品详情
+            case 3:
+                history.push(`/productDetail?pid=${value}`)
+                break;
+        
+            default:
+                break;
+        }
+    }
 
     return (
 
-        null
+        <div className={classes.carousel}>
+
+            {/* 轮播图 */}
+            <AutoPlaySwipeableViews
+                className='topview'
+                axis={theme.direction == 'rtl' ? 'x-reverse' : 'x'}
+                index={activeIndex}
+                onChangeIndex={ (index) => {setActiveIndex(index)} }
+                enableMouseEvents
+            >
+                {
+                    props.carouselArr.map((eachitem, index) => {
+                        return (
+                            <div key={index} className='eachslide' onClick={clickSlide(eachitem)}>
+                                <img className='img' src={ props.appConfig.imgUrl + eachitem.img }></img>
+                            </div>
+                        )
+                    })
+                }
+            </AutoPlaySwipeableViews>
+            
+            {/* 步进器 */}
+            <MobileStepper
+                className='bottomview'
+                steps={props.carouselArr.length}
+                position="bottom"
+                variant="dots"
+                activeStep={activeIndex}
+                nextButton={
+                  <Button size="small" onClick={setActiveIndex(activeIndex + 1)} disabled={activeIndex === props.carouselArr.length - 1}>
+                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                  </Button>
+                }
+                backButton={
+                  <Button size="small" onClick={setActiveIndex(activeIndex - 1)} disabled={activeIndex === 0}>
+                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                  </Button>
+                }
+            />
+
+        </div>
 
     )
 
@@ -111,15 +211,28 @@ function Home(props) {
 
     return (
 
-        <Container className='home'>
+        <Box className='home'>
 
-            <h1>你好</h1>
+            {/* 轮播图 */}
+            {
+                (state.carouselArr && state.carouselArr.length > 0) && <CarouselEl carouselArr={state.carouselArr} carouselHeight={300} {...props}></CarouselEl>
+            }
 
+            {/* 如何使用 */}
 
-        </Container>
+            {/* 公告列表 */}
+            {
+                (state.noticeList && state.noticeList.length > 0) && <NoticeList noticeList={state.noticeList} {...props}></NoticeList>
+            }
+
+        </Box>
 
     )
 
 }
 
-export default Home
+const mapStateToProps = ((state, ownprops) => {
+    return {...ownprops, ...state}
+})
+
+export default connect(mapStateToProps, null)(Home)
