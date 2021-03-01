@@ -2,60 +2,45 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Box, MobileStepper, Card, CardActions, CardContent, Button, Typography, TextField } from '@material-ui/core'
-import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons'
-import { gethomepagedata } from '../../api/homeapi'
-import store from '../../store'
-import SwipeableViews from 'react-swipeable-views';
-import { autoPlay } from 'react-swipeable-views-utils';
+import { Box, Card, CardActions, CardContent, Button, Typography } from '@material-ui/core'
+import { gethomepagedata } from '../../api/homeapi';
+import SwiperCore, { Pagination, Autoplay, EffectCube } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.scss';
+import 'swiper/components/pagination/pagination.scss';
+import 'swiper/components/effect-cube/effect-cube.scss';
+
+
+SwiperCore.use([Pagination, Autoplay, EffectCube]);
 
 // 轮播图组件
-function CarouselEl(props) {
+function SwiperCom(props) {
 
     const history = useHistory()
-    const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
     const useStyles = makeStyles(theme => ({
 
-        carousel: {
-            width: '100%',
+        swiper: {
             height: props.carouselHeight,
-            position: 'relative',
-            '& .topview': {
+
+            '& .eachslide': {
+
                 width: '100%',
                 height: '100%',
-                '& .react-swipeable-view-container': {
-                    height: '100%'
-                },
-                '& .eachslide': {
-    
+
+                '& .img': {
                     width: '100%',
                     height: '100%',
-    
-                    '& .img': {
-                        width: '100%',
-                        height: '100%',
-                        display: 'block',
-                    }
-                },
+                    display: 'block',
+                }
             },
-            '& .bottomview': {
-                height: '20px',
-                bottom: '0',
-                left: '0',
-                right: '0'
-            }
-            
+
         }
     }))
-
     const classes = useStyles()
-    const theme = useTheme()
-
-    const [activeIndex, setActiveIndex] = useState(0)
 
     const clickSlide = (eachitem) => (event) => {
-        
+
         let type = eachitem.type // 跳转类型 1跳转链接   2公告详情   3商品详情   -99代表无跳转
         let value = eachitem.value
         // 根据不同的类型跳转不同的页面
@@ -72,7 +57,7 @@ function CarouselEl(props) {
             case 3:
                 history.push(`/productDetail?pid=${value}`)
                 break;
-        
+
             default:
                 break;
         }
@@ -80,47 +65,30 @@ function CarouselEl(props) {
 
     return (
 
-        <div className={classes.carousel}>
+        <Swiper
+            effect='cube'
+            autoplay={{ disableOnInteraction: false }}
+            speed={500}
+            loop
+            className={classes.swiper}
+            spaceBetween={50}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+        // onSwiper={(swiper) => console.log(swiper)}
+        // onSlideChange={(swiper) => console.log(`当前loop模式下切换到的索引为:${swiper.activeIndex}`)}
+        >
 
-            {/* 轮播图 */}
-            <AutoPlaySwipeableViews
-                className='topview'
-                axis={theme.direction == 'rtl' ? 'x-reverse' : 'x'}
-                index={activeIndex}
-                onChangeIndex={ (index) => {setActiveIndex(index)} }
-                enableMouseEvents
-            >
-                {
-                    props.carouselArr.map((eachitem, index) => {
-                        return (
-                            <div key={index} className='eachslide' onClick={clickSlide(eachitem)}>
-                                <img className='img' src={ props.appConfig.imgUrl + eachitem.img }></img>
-                            </div>
-                        )
-                    })
-                }
-            </AutoPlaySwipeableViews>
-            
-            {/* 步进器 */}
-            <MobileStepper
-                className='bottomview'
-                steps={props.carouselArr.length}
-                position="bottom"
-                variant="dots"
-                activeStep={activeIndex}
-                nextButton={
-                  <Button size="small" onClick={setActiveIndex(activeIndex + 1)} disabled={activeIndex === props.carouselArr.length - 1}>
-                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                  </Button>
-                }
-                backButton={
-                  <Button size="small" onClick={setActiveIndex(activeIndex - 1)} disabled={activeIndex === 0}>
-                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                  </Button>
-                }
-            />
+            {
+                props.carouselArr.map((eachitem, index) => {
+                    return (
+                        <SwiperSlide key={index} className='eachslide' onClick={clickSlide(eachitem)}>
+                            <img className='img' src={props.appConfig.imgUrl + eachitem.img}></img>
+                        </SwiperSlide>
+                    )
+                })
+            }
 
-        </div>
+        </Swiper>
 
     )
 
@@ -192,11 +160,10 @@ function Home(props) {
 
     useEffect(
         () => {
-
+            console.log(`更新了数据  开始获取接口内容`)
             // 获取首页的数据
             gethomepagedata().then(response => {
                 // 获取首页数据成功
-                console.log(response)
                 setState({
                     carouselArr: response.data.carouselList,
                     noticeList: response.data.listNotice
@@ -215,7 +182,7 @@ function Home(props) {
 
             {/* 轮播图 */}
             {
-                (state.carouselArr && state.carouselArr.length > 0) && <CarouselEl carouselArr={state.carouselArr} carouselHeight={300} {...props}></CarouselEl>
+                (state.carouselArr && state.carouselArr.length > 0) && <SwiperCom carouselArr={state.carouselArr} carouselHeight={300} {...props}></SwiperCom>
             }
 
             {/* 如何使用 */}
@@ -232,7 +199,7 @@ function Home(props) {
 }
 
 const mapStateToProps = ((state, ownprops) => {
-    return {...ownprops, ...state}
+    return { ...ownprops, ...state }
 })
 
 export default connect(mapStateToProps, null)(Home)
