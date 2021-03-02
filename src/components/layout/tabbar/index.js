@@ -14,7 +14,7 @@ export default function TabBar(props) {
             position: 'fixed',
             bottom: '0',
             left: '0',
-            right: '0'
+            right: '0',
         },
     });
 

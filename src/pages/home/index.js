@@ -98,7 +98,7 @@ function NoticeList(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            width: '100%'
+            padding: theme.spacing(2)
         },
         eachnotice: {
             width: '100%',
@@ -124,7 +124,7 @@ function NoticeList(props) {
                     props.noticeList.map((eachitem, index) => {
                         return (
                             <Grid item key={eachitem.id} xs={6}>
-                                <Card className={classes.eachnotice}>
+                                <Card>
                                     {/* 头部 */}
                                     <CardHeader className='header' title={eachitem.title} subheader={eachitem.createDate}></CardHeader>
                                     {/* 公告图片 */}
@@ -147,11 +147,12 @@ function NoticeList(props) {
 // 主页组件
 function Home(props) {
 
-    const useStyles = makeStyles((theme) => {
+    const useStyles = makeStyles((theme) => ({
         root: {
             // width: '100%'
+            paddingBottom: '56px'
         }
-    })
+    }))
     const classes = useStyles()
 
     const [state, setState] = useState({
