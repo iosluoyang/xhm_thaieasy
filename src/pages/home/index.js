@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Box, Card, CardActions, CardContent, Button, Typography } from '@material-ui/core'
+import { Box, Grid, Card, CardHeader, CardMedia, CardContent, Typography, Button, withWidth, isWidthUp } from '@material-ui/core'
 import { gethomepagedata } from '../../api/homeapi';
-import SwiperCore, { Pagination, Autoplay, EffectCube } from 'swiper';
+import SwiperCore, { Pagination, Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import 'swiper/components/effect-cube/effect-cube.scss';
 
 
-SwiperCore.use([Pagination, Autoplay, EffectCube]);
-
 // 轮播图组件
 function SwiperCom(props) {
+
+    SwiperCore.use([Pagination, Autoplay]);
 
     const history = useHistory()
 
@@ -40,7 +40,7 @@ function SwiperCom(props) {
     const classes = useStyles()
 
     const clickSlide = (eachitem) => (event) => {
-
+        console.log(`当前点击的类型为:${eachitem.type}`)
         let type = eachitem.type // 跳转类型 1跳转链接   2公告详情   3商品详情   -99代表无跳转
         let value = eachitem.value
         // 根据不同的类型跳转不同的页面
@@ -66,7 +66,6 @@ function SwiperCom(props) {
     return (
 
         <Swiper
-            effect='cube'
             autoplay={{ disableOnInteraction: false }}
             speed={500}
             loop
@@ -95,50 +94,52 @@ function SwiperCom(props) {
 }
 
 // 通知列表
-function NoticeList() {
+function NoticeList(props) {
 
-    const useStyles = makeStyles({
+    const useStyles = makeStyles((theme) => ({
         root: {
-            width: '80%'
+            width: '100%'
         },
-        bullet: {
-            display: 'inline-block',
-            margin: '0 2px',
-            transform: 'scale(0.8)',
-        },
-        title: {
-            fontSize: 14,
-        },
-        pos: {
-            marginBottom: 12,
-        },
-    });
+        eachnotice: {
+            width: '100%',
+            '& .header': {
+
+            },
+            '& .img': {
+                height: 0,
+                paddingTop: '56.25%'
+            }
+        }
+       
+    }));
 
     const classes = useStyles();
-    const bull = <span className={classes.bullet}>•</span>;
 
     return (
-        <Card className={classes.root}>
-            <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    Word of the Day
-                </Typography>
-                <Typography variant="h5" component="h2">
-                    be{bull}nev{bull}o{bull}lent
-                </Typography>
-                <Typography className={classes.pos} color="textSecondary">
-                    adjective
-                </Typography>
-                <Typography variant="body2" component="p">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small">查看详情</Button>
-            </CardActions>
-        </Card>
+        <div className={classes.root}>
+
+            <Typography variant="body1" color="textSecondary" component="p">{`${'公告'}`}</Typography>
+            <Grid container justify='flex-start' alignItems='center' spacing={2}>
+                {
+                    props.noticeList.map((eachitem, index) => {
+                        return (
+                            <Grid item key={eachitem.id} xs={6}>
+                                <Card className={classes.eachnotice}>
+                                    {/* 头部 */}
+                                    <CardHeader className='header' title={eachitem.title} subheader={eachitem.createDate}></CardHeader>
+                                    {/* 公告图片 */}
+                                    { eachitem.img && <CardMedia className='img' img={props.appConfig.imgUrl + eachitem.img}></CardMedia> }
+                                    {/* 公告内容 */}
+                                    <CardContent>
+                                        <Typography variant="body2" color="textSecondary" component="p">{eachitem.content}</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )
+                    })
+                }
+            </Grid>
+        </div>
     );
 
 }
@@ -146,15 +147,15 @@ function NoticeList() {
 // 主页组件
 function Home(props) {
 
-    const useStyles = makeStyles({
-        carousel: {
-
+    const useStyles = makeStyles((theme) => {
+        root: {
+            // width: '100%'
         }
     })
     const classes = useStyles()
 
     const [state, setState] = useState({
-        carouselArr: [],
+        carouselList: [],
         noticeList: []
     })
 
@@ -165,7 +166,7 @@ function Home(props) {
             gethomepagedata().then(response => {
                 // 获取首页数据成功
                 setState({
-                    carouselArr: response.data.carouselList,
+                    carouselList: response.data.carouselList,
                     noticeList: response.data.listNotice
                 })
             }).catch(error => {
@@ -178,19 +179,25 @@ function Home(props) {
 
     return (
 
-        <Box className='home'>
+        <Box className={classes.root} >
 
             {/* 轮播图 */}
             {
-                (state.carouselArr && state.carouselArr.length > 0) && <SwiperCom carouselArr={state.carouselArr} carouselHeight={300} {...props}></SwiperCom>
+                (state.carouselList && state.carouselList.length > 0) && <SwiperCom carouselArr={state.carouselList} carouselHeight={ isWidthUp('sm', props.width) ? '400px' : '300px' } {...props}></SwiperCom>
             }
-
-            {/* 如何使用 */}
 
             {/* 公告列表 */}
             {
                 (state.noticeList && state.noticeList.length > 0) && <NoticeList noticeList={state.noticeList} {...props}></NoticeList>
             }
+
+            {/* 如何使用 */}
+
+            <div>
+
+            </div>
+
+            
 
         </Box>
 
@@ -202,4 +209,4 @@ const mapStateToProps = ((state, ownprops) => {
     return { ...ownprops, ...state }
 })
 
-export default connect(mapStateToProps, null)(Home)
+export default connect(mapStateToProps, null)(withWidth()(Home))
