@@ -4,11 +4,12 @@ import { bindActionCreators } from 'redux';
 import { actionLogout, updateAppDrawerOpen } from '../../../store/actionCreator';
 import { useHistory } from 'react-router-dom'
 import utils from '../../../utils';
-import { makeStyles } from "@material-ui/core/styles";
-import {Box, AppBar, Toolbar, Hidden, Link, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
+import { makeStyles, fade } from "@material-ui/core/styles";
+import {Box, AppBar, Toolbar, InputBase, Hidden, Link, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import logoImg from '../../../assets/imgs/logo.png';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Fade from '@material-ui/core/Fade';
 
@@ -65,6 +66,9 @@ function NavBar(props) {
     // props的参数 isHome 代表为首页的导航栏
     const isHome = Boolean(props.isHome) || false
 
+    // props的参数 isSearch 代表带有搜索框的导航栏
+    const isSearch = Boolean(props.isSearch) || false
+
     const useStyles = makeStyles((theme) => ({
         root: {
             marginBottom: '56px',
@@ -75,7 +79,48 @@ function NavBar(props) {
             marginRight: theme.spacing(2)
         },
         leftButton: {
+            marginRight: theme.spacing(1),
+        },
+        navtitle: {
+            fontSize: theme.typography.pxToRem(15),
+            fontWeight: 'bold',
+        },
+        search: {
+            position: 'relative',
+            borderRadius: theme.shape.borderRadius,
+            backgroundColor: fade(theme.palette.common.white, 0.15),
+            '&:hover': {
+              backgroundColor: fade(theme.palette.common.white, 0.25),
+            },
             marginRight: theme.spacing(2),
+            marginLeft: theme.spacing(2),
+            width: '60%',
+            [theme.breakpoints.up('sm')]: {
+              marginLeft: theme.spacing(3),
+              width: 'auto',
+            },
+        },
+        searchIcon: {
+            padding: theme.spacing(0, 2),
+            height: '100%',
+            position: 'absolute',
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        inputRoot: {
+            color: 'inherit',
+        },
+        inputInput: {
+            padding: theme.spacing(1, 1, 1, 0),
+            // vertical padding + font size from searchIcon
+            paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+            transition: theme.transitions.create('width'),
+            width: '100%',
+            [theme.breakpoints.up('md')]: {
+              width: '20ch',
+            },
         },
         avatar: {
             width: theme.spacing(5),
@@ -147,7 +192,25 @@ function NavBar(props) {
                     </Hidden>
                     
                     {/* 标题 */}
-                    <Typography variant="h6">{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
+                    <Typography noWrap className={classes.navtitle}>{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
+                    
+                    {/* 搜索框 */}
+                    {
+                        isSearch && 
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                              <SearchIcon />
+                            </div>
+                            <InputBase
+                              placeholder={ `${'搜索'}` }
+                              classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                              }}
+                              inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </div>
+                    }
 
                     {/* 导航区域 md以下隐藏 */}
                     <Hidden mdDown>

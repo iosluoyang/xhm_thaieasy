@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
-import { Box, Grid, Card, CardActionArea, CardMedia, CardContent, Typography, GridList, GridListTile, GridListTileBar, Stepper, Step, StepLabel, Button, withWidth, isWidthUp } from '@material-ui/core'
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles'
+import { Box, Grid, Card, CardActionArea, CardMedia, CardContent, Typography, 
+        Accordion, AccordionSummary, AccordionDetails, LinearProgress,
+        GridList, GridListTile, GridListTileBar, Stepper, Step, StepLabel, StepContent, Button, withWidth, isWidthUp, Divider, Container } from '@material-ui/core'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import TouchAppTwoToneIcon from '@material-ui/icons/TouchAppTwoTone';
+import GuideShopping from '../../assets/imgs/guide/ic_shopping.png'
+import GuideChatting from '../../assets/imgs/guide/ic_chatting.png'
+import GuideDelivery from '../../assets/imgs/guide/ic_delivery.png'
+
 import { gethomepagedata } from '../../api/homeapi';
 import SwiperCore, { Pagination, Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -21,7 +29,9 @@ function SwiperCom(props) {
     const useStyles = makeStyles(theme => ({
 
         swiper: {
-            height: props.carouselHeight,
+
+            height: props.comHeight,
+            borderRadius: '10px',
 
             '& .eachslide': {
 
@@ -31,11 +41,14 @@ function SwiperCom(props) {
                 '& .img': {
                     width: '100%',
                     height: '100%',
+                    borderRadius: '10px',
                     display: 'block',
+                    objectFit: 'cover'
                 }
             },
 
         }
+
     }))
     const classes = useStyles()
 
@@ -65,29 +78,33 @@ function SwiperCom(props) {
 
     return (
 
-        <Swiper
-            autoplay={{ disableOnInteraction: false }}
-            speed={500}
-            loop
-            className={classes.swiper}
-            spaceBetween={50}
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-        // onSwiper={(swiper) => console.log(swiper)}
-        // onSlideChange={(swiper) => console.log(`当前loop模式下切换到的索引为:${swiper.activeIndex}`)}
-        >
+        <Box padding={2}>
 
-            {
-                props.carouselArr.map((eachitem, index) => {
-                    return (
-                        <SwiperSlide key={index} className='eachslide' onClick={clickSlide(eachitem)}>
-                            <img className='img' src={props.appConfig.imgUrl + eachitem.img}></img>
-                        </SwiperSlide>
-                    )
-                })
-            }
+            <Swiper
+                autoplay={{ disableOnInteraction: false }}
+                speed={500}
+                loop
+                className={classes.swiper}
+                spaceBetween={50}
+                slidesPerView={1}
+                pagination={{ clickable: true }}
+                // onSwiper={(swiper) => console.log(swiper)}
+                // onSlideChange={(swiper) => console.log(`当前loop模式下切换到的索引为:${swiper.activeIndex}`)}
+            >
 
-        </Swiper>
+                {
+                    props.dataArr.map((eachitem, index) => {
+                        return (
+                            <SwiperSlide key={index} className='eachslide' onClick={clickSlide(eachitem)}>
+                                <img className='img' src={props.appConfig.imgUrl + eachitem.img} alt={eachitem.img}></img>
+                            </SwiperSlide>
+                        )
+                    })
+                }
+
+            </Swiper>
+
+        </Box>
 
     )
 
@@ -100,16 +117,13 @@ function NoticeList(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            padding: theme.spacing(2)
+            
         },
-        eachnotice: {
+        eachitem: {
             width: '100%',
             '& .img': {
                 height: 0,
-                paddingTop: '60%'
-            },
-            '& .header': {
-
+                paddingTop: '62.5%'
             },
         }
 
@@ -123,16 +137,16 @@ function NoticeList(props) {
     }
 
     return (
-        <div className={classes.root}>
+        <Box className={classes.root} padding={2}>
 
-            <Typography gutterBottom variant="h5" color="textPrimary" component="p">{`${'公告'}`}</Typography>
+            <Typography gutterBottom variant="h5" color="textPrimary" component="p" style={{ textAlign: 'center' }}>{`${'公告'}`}</Typography>
 
-            <Grid container justify='flex-start' alignItems='center' spacing={2}>
+            <Grid container alignItems='center' spacing={2}>
                 {
-                    props.noticeList.map((eachitem, index) => {
+                    props.dataArr.map((eachitem, index) => {
                         return (
-                            <Grid item key={eachitem.id} xs={6} sm={4} md={2}>
-                                <Card className={classes.eachnotice} onClick={gotoNoticeDetail(eachitem)}>
+                            <Grid item key={eachitem.id} xs={6} sm={4}>
+                                <Card className={classes.eachitem} onClick={gotoNoticeDetail(eachitem)}>
                                     <CardActionArea>
 
                                         {/* 公告图片 */}
@@ -140,11 +154,11 @@ function NoticeList(props) {
 
                                         {/* 公告内容 */}
                                         <CardContent>
-                                            <Typography gutterBottom variant="subtitle1" component="h2">
+                                            <Typography gutterBottom variant="subtitle1" color="textPrimary" component="h2">
                                                 {eachitem.title}
                                             </Typography>
-                                            <Typography variant="overline" color="textSecondary" component="p">
-                                                {eachitem.content}
+                                            <Typography variant="caption" color="textSecondary" component="p">
+                                                {eachitem.createDate}
                                             </Typography>
                                         </CardContent>
 
@@ -155,7 +169,8 @@ function NoticeList(props) {
                     })
                 }
             </Grid>
-        </div>
+        
+        </Box>
     );
 
 }
@@ -166,7 +181,7 @@ function HowToUseCom(props) {
     const useStyles = makeStyles((theme) => ({
         root: {
             padding: theme.spacing(2)
-        }
+        },
     }))
     const classes = useStyles()
 
@@ -175,17 +190,17 @@ function HowToUseCom(props) {
             {
                 title: `${'选择心仪的商品添加心愿单'}`,
                 subtitle: `${'在国内淘宝、1688、天猫等购物平台选择您心仪的商品，复制商品链接'}`,
-                icon: ''
+                icon: GuideShopping
             },
             {
                 title: `${'专属客服与您确认商品及数量'}`,
                 subtitle: `${'每一位用户都将分配专属客服，与您确认购买商品的数量和规格等'}`,
-                icon: ''
+                icon: GuideChatting
             },
             {
                 title: `${'确认无误客服下单，等待送货上门'}`,
                 subtitle: `${'与您确认后我们的客服人员会在国内下单并配送至泰国的收货地址'}`,
-                icon: ''
+                icon: GuideDelivery
             }
         ]
     }
@@ -193,14 +208,41 @@ function HowToUseCom(props) {
     const steps = getSteps()
     const [currentStep, setCurrentStep] = useState(0)
 
-    // 切换下一个环节
-    const moveNext = () => {
-        setCurrentStep(currentStep < steps.length - 1 ? currentStep + 1 : 0)
+    //自定义步骤条icon
+    function CustomStepIcon(props) {
+
+      const useStyles = makeStyles((theme) => ({
+          stepIcon: {
+              width: '50px',
+              height: '50px',
+              objectFit: 'contain',
+          }
+      }))
+
+      const classes = useStyles()
+      const { active, completed } = props;
+    
+      return (
+        <img className={classes.stepIcon} src={steps[props.icon-1].icon} alt={props.icon}></img>
+      );
+
+    }
+
+    const [intervalInstance, setIntervalinstance] = useState(null)
+
+    const clickStep = (index) => (event) => {
+
+        // 清除定时器
+        clearInterval(intervalInstance)
+
+        // 设置当前的激活索引
+        setCurrentStep(index)
+
     }
 
     useEffect(() => {
 
-        let intervalInstance = setInterval(() => {
+        let ownintervalInstance = setInterval(() => {
 
             // 注意此处，不是直接通过setCurrentStep()修改里面的值，因为闭包原因，如果通过这种方式会一直为0
             setCurrentStep((step) => {
@@ -208,7 +250,9 @@ function HowToUseCom(props) {
                 return moveStep
             })
 
-        }, 1000);
+        }, 5000);
+
+        setIntervalinstance(ownintervalInstance)
 
         // 清除副作用
         return () => {
@@ -220,22 +264,28 @@ function HowToUseCom(props) {
 
     return (
 
-        <div className={classes.root}>
+        <Box className={classes.root}>
 
-            <Typography gutterBottom variant="h5" color="textPrimary" component="p">{`${'只需3步,轻松下单'}`}</Typography>
+            <Typography gutterBottom variant="h5" color="textPrimary" component="p" style={{ textAlign: 'center' }}>{`${'只需3步,轻松使用'}`}</Typography>
 
             <Stepper activeStep={currentStep} orientation={isWidthUp('sm', props.width) ? 'horizontal' : 'vertical'}>
                 {
-                    steps.map((eachstep, index) => {
+                    steps.map((eachitem, index) => {
                         return (
-                            <Step key={index}>
-                                <StepLabel>{eachstep.title}</StepLabel>
+                            <Step key={index} onClick={clickStep(index)}>
+
+                                <StepLabel StepIconComponent={CustomStepIcon}>{eachitem.title}</StepLabel>
+                                <StepContent>
+                                    <Typography variant='overline' color='textSecondary'>{eachitem.subtitle}</Typography>
+                                </StepContent>
+                            
                             </Step>
                         )
                     })
                 }
             </Stepper>
-        </div>
+
+        </Box>
 
     )
 }
@@ -282,11 +332,12 @@ function Home(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            // width: '100%'
-            paddingBottom: '56px'
+            paddingBottom: '56px',
         }
     }))
     const classes = useStyles()
+
+    const history = useHistory()
 
     const [state, setState] = useState({
         carouselList: [],
@@ -315,16 +366,21 @@ function Home(props) {
 
     return (
 
-        <Box className={classes.root} >
+        <Box className={classes.root} bgcolor="info.main">
 
             {/* 轮播图 */}
             {
-                (state.carouselList && state.carouselList.length > 0) && <SwiperCom carouselArr={state.carouselList} carouselHeight={isWidthUp('sm', props.width) ? '400px' : '300px'} {...props}></SwiperCom>
+                (state.carouselList && state.carouselList.length > 0) && <SwiperCom dataArr={state.carouselList} comHeight={isWidthUp('sm', props.width) ? '400px' : '150px'} {...props}></SwiperCom>
             }
+
+            {/* 开始订购按钮 */}
+            <Box display='flex' justifyContent='center'>
+                <Button variant='contained' color='secondary' size='large' endIcon={ <TouchAppTwoToneIcon /> } onClick={ () => { history.push('/wishproduct/handleproduct/add') } }>{`${'开始购买'}`}</Button>
+            </Box>
 
             {/* 公告列表 */}
             {
-                (state.noticeList && state.noticeList.length > 0) && <NoticeList noticeList={state.noticeList} {...props}></NoticeList>
+                (state.noticeList && state.noticeList.length > 0) && <NoticeList dataArr={state.noticeList} {...props}></NoticeList>
             }
 
             {/* 如何使用 */}
