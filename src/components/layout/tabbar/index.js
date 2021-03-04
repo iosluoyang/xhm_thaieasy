@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
-import { BottomNavigation, BottomNavigationAction } from '@material-ui/core'
+import { Box, BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import HomeIcon from '@material-ui/icons/Home';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 export default function TabBar(props) {
 
-    const useStyles = makeStyles({
+    const useStyles = makeStyles((theme) => ({
         root: {
             width: '100%',
             position: 'fixed',
@@ -16,24 +16,48 @@ export default function TabBar(props) {
             left: '0',
             right: '0',
         },
-    });
-
+    }));
     const classes = useStyles();
+
+    const owntabs = [
+        {
+            title: `${'首页'}`,
+            value: 'home',
+            link: '/',
+            icon: <HomeIcon />
+        },
+        {
+            title: `${'任务单'}`,
+            value: 'mission',
+            link: '/mission',
+            icon: <FavoriteIcon />
+        },
+        {
+            title: `${'我'}`,
+            value: 'me',
+            link: '/me',
+            icon: <LocationOnIcon />
+        }
+    ]
+    const [tabs, setTabs] = useState(owntabs)
     const [currenttabvalue, setCurrentTabValue] = useState(props.currentTabValue)
 
     return (
-        <BottomNavigation
-            value={currenttabvalue || 'home'}
-            onChange={(event, newValue) => {
-                setCurrentTabValue(newValue)
-            }}
-            showLabels
-            className={classes.root}
-        >
-            <BottomNavigationAction label="Home" value='home' component={Link} to="/" icon={<HomeIcon />} />
-            <BottomNavigationAction label="Content" value='content' component={Link} to="/content" icon={<FavoriteIcon />} />
-            <BottomNavigationAction label="Me" value='me' component={Link} to="/me" icon={<LocationOnIcon />} />
-        </BottomNavigation>
+        <Box borderTop={1} borderColor='grey.500' className={classes.root}>
+            <BottomNavigation
+                value={currenttabvalue || 'home'}
+                onChange={(event, newValue) => {
+                    setCurrentTabValue(newValue)
+                }}
+                showLabels
+            >
+                {
+                    tabs.map((eachitem, index) => {
+                        return <BottomNavigationAction key={index} label={eachitem.title} value={eachitem.value} component={Link} to={eachitem.link} icon={eachitem.icon} />
+                    })
+                }
+            </BottomNavigation>
+        </Box>
     );
 
 }

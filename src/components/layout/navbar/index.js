@@ -11,6 +11,7 @@ import logoImg from '../../../assets/imgs/logo.png';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import TelegramIcon from '@material-ui/icons/Telegram';
 import Fade from '@material-ui/core/Fade';
 
 // 导航栏链接组件
@@ -84,6 +85,7 @@ function NavBar(props) {
         navtitle: {
             fontSize: theme.typography.pxToRem(15),
             fontWeight: 'bold',
+            flexShrink: 0,
         },
         search: {
             position: 'relative',
@@ -94,7 +96,7 @@ function NavBar(props) {
             },
             marginRight: theme.spacing(2),
             marginLeft: theme.spacing(2),
-            width: '60%',
+            flexGrow: 1,
             [theme.breakpoints.up('sm')]: {
               marginLeft: theme.spacing(3),
               width: 'auto',
@@ -146,6 +148,16 @@ function NavBar(props) {
         history.goBack()
     }
 
+    const [searchText, setSearchText] = useState(props.search && props.search.defaultValue ? props.search.defaultValue : '')
+    const searchChange = (e) => {
+        let searchText = e.target.value
+        setSearchText(searchText)
+    }
+
+    const startToSearch = () => {
+        if(searchText) props.onStartToSearch(searchText)
+    }
+
     const [anchorEl, setAnchorEl] = useState(null)
 
     const openMenu = (event) => {
@@ -194,23 +206,32 @@ function NavBar(props) {
                     {/* 标题 */}
                     <Typography noWrap className={classes.navtitle}>{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
                     
-                    {/* 搜索框 */}
-                    {
-                        isSearch && 
-                        <div className={classes.search}>
-                            <div className={classes.searchIcon}>
-                              <SearchIcon />
+                    {/* 搜索框 md以上隐藏 */}
+                    <Hidden mdUp>
+
+                        {
+                            isSearch && 
+                            <div className={classes.search}>
+                                <div className={classes.searchIcon}>
+                                  <SearchIcon />
+                                </div>
+                                <InputBase
+                                    type='search'
+                                    placeholder={ `${ props.search && props.search.placeholder ? props.search.placeholder : '搜索' }` }
+                                    autoFocus={ props.search && props.search.autoFocus ? props.search.autoFocus : false }
+                                    defaultValue={ props.search && props.search.defaultValue ? props.search.defaultValue : '' }
+                                    onChange = { searchChange }
+                                    classes={{
+                                        root: classes.inputRoot,
+                                        input: classes.inputInput,
+                                    }}
+                                    inputProps={{ 'aria-label': 'search' }}
+                                    endAdornment={ searchText && <TelegramIcon position='end' onClick={startToSearch} /> }
+                                />
                             </div>
-                            <InputBase
-                              placeholder={ `${'搜索'}` }
-                              classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                              }}
-                              inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </div>
-                    }
+                        }
+
+                    </Hidden>
 
                     {/* 导航区域 md以下隐藏 */}
                     <Hidden mdDown>
