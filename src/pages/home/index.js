@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles'
-import { Box, Grid, Card, CardActionArea, CardMedia, CardContent, Typography, 
-        Accordion, AccordionSummary, AccordionDetails, LinearProgress,
-        GridList, GridListTile, GridListTileBar, Stepper, Step, StepLabel, StepContent, Button, withWidth, isWidthUp, Divider, Container } from '@material-ui/core'
+import {
+    Box, Grid, Card, CardActionArea, CardMedia, CardContent, Typography,
+    Accordion, AccordionSummary, AccordionDetails, LinearProgress,
+    GridList, GridListTile, GridListTileBar, Stepper, Step, StepLabel, StepContent, Button, withWidth, isWidthUp, Divider, Container, Hidden, isWidthDown
+} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import TouchAppTwoToneIcon from '@material-ui/icons/TouchAppTwoTone';
 import GuideShopping from '../../assets/imgs/guide/ic_shopping.png'
@@ -88,8 +90,8 @@ function SwiperCom(props) {
                 spaceBetween={50}
                 slidesPerView={1}
                 pagination={{ clickable: true }}
-                // onSwiper={(swiper) => console.log(swiper)}
-                // onSlideChange={(swiper) => console.log(`当前loop模式下切换到的索引为:${swiper.activeIndex}`)}
+            // onSwiper={(swiper) => console.log(swiper)}
+            // onSlideChange={(swiper) => console.log(`当前loop模式下切换到的索引为:${swiper.activeIndex}`)}
             >
 
                 {
@@ -117,7 +119,7 @@ function NoticeList(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            
+
         },
         eachitem: {
             width: '100%',
@@ -169,7 +171,7 @@ function NoticeList(props) {
                     })
                 }
             </Grid>
-        
+
         </Box>
     );
 
@@ -211,20 +213,20 @@ function HowToUseCom(props) {
     //自定义步骤条icon
     function CustomStepIcon(props) {
 
-      const useStyles = makeStyles((theme) => ({
-          stepIcon: {
-              width: '50px',
-              height: '50px',
-              objectFit: 'contain',
-          }
-      }))
+        const useStyles = makeStyles((theme) => ({
+            stepIcon: {
+                width: '50px',
+                height: '50px',
+                objectFit: 'contain',
+            }
+        }))
 
-      const classes = useStyles()
-      const { active, completed } = props;
-    
-      return (
-        <img className={classes.stepIcon} src={steps[props.icon-1].icon} alt={props.icon}></img>
-      );
+        const classes = useStyles()
+        const { active, completed } = props;
+
+        return (
+            <img className={classes.stepIcon} src={steps[props.icon - 1].icon} alt={props.icon}></img>
+        );
 
     }
 
@@ -268,17 +270,21 @@ function HowToUseCom(props) {
 
             <Typography gutterBottom variant="h5" color="textPrimary" component="p" style={{ textAlign: 'center' }}>{`${'只需3步,轻松使用'}`}</Typography>
 
-            <Stepper activeStep={currentStep} orientation={isWidthUp('sm', props.width) ? 'horizontal' : 'vertical'}>
+            <Stepper activeStep={currentStep} orientation='vertical'>
                 {
                     steps.map((eachitem, index) => {
                         return (
                             <Step key={index} onClick={clickStep(index)}>
 
                                 <StepLabel StepIconComponent={CustomStepIcon}>{eachitem.title}</StepLabel>
-                                <StepContent>
-                                    <Typography variant='overline' color='textSecondary'>{eachitem.subtitle}</Typography>
-                                </StepContent>
-                            
+                                {
+
+                                    <StepContent>
+                                        <Typography variant='overline' color='textSecondary'>{eachitem.subtitle}</Typography>
+                                    </StepContent>
+
+                                }
+
                             </Step>
                         )
                     })
@@ -375,7 +381,7 @@ function Home(props) {
 
             {/* 开始订购按钮 */}
             <Box display='flex' justifyContent='center'>
-                <Button variant='contained' color='secondary' size='large' endIcon={ <TouchAppTwoToneIcon /> } onClick={ () => { history.push('/wishproduct/handleproduct/add') } }>{`${'开始购买'}`}</Button>
+                <Button variant='contained' color='secondary' size='large' endIcon={<TouchAppTwoToneIcon />} onClick={() => { history.push('/wishproduct/handleproduct/add') }}>{`${'开始购买'}`}</Button>
             </Box>
 
             {/* 公告列表 */}
