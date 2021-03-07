@@ -46,8 +46,6 @@ function HandleProduct(props) {
     const [link, setLink] = useState('') // 来源链接
     const [remark, setRemark] = useState('') // 商品备注
 
-
-
     return (
         <Box className={classes.root}>
 
@@ -131,7 +129,7 @@ function HandleProduct(props) {
     )
 
 }
-const mapStateToProps = (state, ownprops) => {
-    return { ...ownprops, ...state }
+const mapStateToProps = (storeState, ownProps) => {
+    return { ...ownProps, ...storeState }
 }
 export default connect(mapStateToProps, null)(HandleProduct)

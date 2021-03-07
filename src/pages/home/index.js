@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles'
@@ -210,6 +210,8 @@ function HowToUseCom(props) {
     const steps = getSteps()
     const [currentStep, setCurrentStep] = useState(0)
 
+    const intervalRef = useRef()
+
     //自定义步骤条icon
     function CustomStepIcon(props) {
 
@@ -230,12 +232,10 @@ function HowToUseCom(props) {
 
     }
 
-    const [intervalInstance, setIntervalinstance] = useState(null)
-
     const clickStep = (index) => (event) => {
 
         // 清除定时器
-        clearInterval(intervalInstance)
+        clearInterval(intervalRef.current)
 
         // 设置当前的激活索引
         setCurrentStep(index)
@@ -244,7 +244,7 @@ function HowToUseCom(props) {
 
     useEffect(() => {
 
-        let ownintervalInstance = setInterval(() => {
+        let intervalInstance = setInterval(() => {
 
             // 注意此处，不是直接通过setCurrentStep()修改里面的值，因为闭包原因，如果通过这种方式会一直为0
             setCurrentStep((step) => {
@@ -254,12 +254,11 @@ function HowToUseCom(props) {
 
         }, 5000);
 
-        setIntervalinstance(ownintervalInstance)
+        intervalRef.current = intervalInstance
 
         // 清除副作用
         return () => {
-            console.log(`清除了定时器`)
-            clearInterval(intervalInstance)
+            clearInterval(intervalRef.current)
         }
 
     }, [])
