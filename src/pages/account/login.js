@@ -41,12 +41,12 @@ function Login(props) {
 
     // 注册账号
     const registerAccount = () => {
-        history.push('/register')
+        history.push('/account/register')
     }
 
     // 忘记密码
     const forgetPwd = () => {
-        history.push('/editPwd:type')
+        history.push('/account/forgetpwd')
     }
 
     const login = () => {

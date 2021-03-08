@@ -8,7 +8,7 @@ export default function GlobalDialog(props) {
     const [dialogTitle, setDialogTitle] = useState(`提示`)
     const [dialogContent, setDialogContent] = useState('')
     const [dialogCallBack, setDialogCallBack] = useState(null)
-    const [dialogType, setDialogType] = useState('normal')
+    const [dialogType, setDialogType] = useState('normal')  // type: normal confirm
 
     useEffect(() => {
 

@@ -3,21 +3,45 @@ import Layout from '../components/layout'
 import Home from '../pages/home'
 import Mission from '../pages/mission'
 import Me from '../pages/me'
-import Login from '../pages/login'
-import Register from '../pages/register'
+
+import Account from '../pages/account'
+import Login from '../pages/account/login'
+import Register from '../pages/account/register'
+import ForgetPwd from '../pages/account/forgetpwd'
+
+
 import WishProduct from '../pages/wishproduct'
 import WishProductList from '../pages/wishproduct/productlist'
 import HandleProduct from '../pages/wishproduct/handleproduct.js'
+import ActiveAccnount from '../pages/account/activeAccount'
 
 let routes = [
-
     {
-        path: '/register',
-        component: Register
-    },
-    {
-        path: '/login',
-        component: Login
+        path: '/account',
+        component: Account,
+        routes: [
+            {
+                path: '',
+                component: Login,
+                exact: true
+            },
+            {
+                path: '/login',
+                component: Login,
+            },
+            {
+                path: '/register',
+                component: Register,
+            },
+            {
+                path: 'activeaccount/:code',
+                component: ActiveAccnount,
+            },
+            {
+                path: '/forgetpwd',
+                component: ForgetPwd,
+            }
+        ]
     },
     {
         path: '/wishproduct',
@@ -38,7 +62,7 @@ let routes = [
         component: Layout,// 所使用的组件
         routes: [
             {
-                path: '/',
+                path: '',
                 component: Home,
                 exact: true
             },

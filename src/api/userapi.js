@@ -3,6 +3,9 @@ import axiosinstance from './index'
 export function registerapi(data) {
     return axiosinstance.request({ url: '/app/user/register.do', data })
 }
+export function activeaccountapi(data) {
+    return axiosinstance.request({ url: '/app/user/activate.do' })
+}
 
 export function loginapi(data) {
     return axiosinstance.request({ url: '/app/user/login.do', data })

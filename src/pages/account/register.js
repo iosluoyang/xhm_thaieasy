@@ -58,6 +58,9 @@ export default function Register(props) {
     // 注册事件
     const register = () => {
 
+        history.replace(`${'/account/activeaccount/' + '3ya3j8'}`)
+        return
+
         // 检查数据
         if (!email) {
             utils.showToast(`请输入邮箱`, 'info')
@@ -83,10 +86,11 @@ export default function Register(props) {
         registerapi(data).then(response => {
             // 注册成功
 
-            utils.showDialog(`提示`, `注册成功,一条确认邮件已经发送到您的邮箱,请尽快进行激活,激活后可使用邮箱或手机号码登陆`, 'normal', (callbackdata) => {
+            utils.showDialog(`提示`, `注册成功,一条确认邮件已经发送到您的邮箱,请尽快进行激活,激活后可使用邮箱登陆`, 'normal', (callbackdata) => {
                 if (callbackdata.type == 'confirm') {
                     // 点击了确认  返回上一个页面
-                    history.goBack()
+                    history.replace(`${'/account/activeaccount/' + '3ya3j8'}`)
+                    // history.goBack()
                 }
             })
 
@@ -159,10 +163,10 @@ export default function Register(props) {
                         </Grid>
 
                     </Grid>
-                    
+
                     {/* 密码确认 */}
                     <Grid item>
-                        
+
                         <Grid container spacing={2} justify="center" alignItems="flex-end">
 
                             <Grid item xs={2}>
@@ -173,18 +177,18 @@ export default function Register(props) {
                                 <FormControl required>
                                     <InputLabel>{`确认密码`}</InputLabel>
                                     <Input type={showConfirmPwd ? 'text' : 'password'}
-                                            value={confirmPwd}
-                                            onChange={typeConfirmPwd}
-                                            endAdornment={
-                                                <InputAdornment position="end">
-                                                    <IconButton onClick={() => { setShowConfirmPwd(!showConfirmPwd) }}
-                                                                 onMouseDown={() => { setShowConfirmPwd(!showConfirmPwd) }}
-                                                    >
-                                                                
-                                                        { showConfirmPwd ? <Visibility /> : <VisibilityOff /> }
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
+                                        value={confirmPwd}
+                                        onChange={typeConfirmPwd}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton onClick={() => { setShowConfirmPwd(!showConfirmPwd) }}
+                                                    onMouseDown={() => { setShowConfirmPwd(!showConfirmPwd) }}
+                                                >
+
+                                                    {showConfirmPwd ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
                                     ></Input>
                                 </FormControl>
                             </Grid>
@@ -207,7 +211,7 @@ export default function Register(props) {
 
                     </Grid>
 
-                    {/* 用户名 */}
+                    {/* 用户昵称 */}
                     <Grid item>
 
                         <Grid container spacing={2} justify="center" alignItems="flex-end">
@@ -215,7 +219,7 @@ export default function Register(props) {
                                 <AccountBoxIcon />
                             </Grid>
                             <Grid item xs={9}>
-                                <TextField id="username" variant='outlined' label={`用户名`} value={userName} onChange={typeUserName} />
+                                <TextField id="username" variant='outlined' label={`昵称`} value={userName} onChange={typeUserName} />
                             </Grid>
                         </Grid>
 

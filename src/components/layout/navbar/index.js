@@ -5,7 +5,7 @@ import { actionLogout, updateAppDrawerOpen } from '../../../store/actionCreator'
 import { useHistory } from 'react-router-dom'
 import utils from '../../../utils';
 import { makeStyles, fade } from "@material-ui/core/styles";
-import {Box, AppBar, Toolbar, InputBase, Hidden, Link, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
+import { Box, AppBar, Toolbar, InputBase, Hidden, Link, IconButton, Typography, Menu, MenuItem, Avatar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import logoImg from '../../../assets/imgs/logo.png';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -49,7 +49,7 @@ function NavLinkPanel(props) {
             {
                 navList.map((navitem, index) => {
                     return (
-                        <Link href={navitem.link} target={ navitem.type === 1 ? '_black' : '' } key={index} color="inherit">{navitem.title}</Link>
+                        <Link href={navitem.link} target={navitem.type === 1 ? '_black' : ''} key={index} color="inherit">{navitem.title}</Link>
                     )
                 })
             }
@@ -92,14 +92,14 @@ function NavBar(props) {
             borderRadius: theme.shape.borderRadius,
             backgroundColor: fade(theme.palette.common.white, 0.15),
             '&:hover': {
-              backgroundColor: fade(theme.palette.common.white, 0.25),
+                backgroundColor: fade(theme.palette.common.white, 0.25),
             },
             marginRight: theme.spacing(2),
             marginLeft: theme.spacing(2),
             flexGrow: 1,
             [theme.breakpoints.up('sm')]: {
-              marginLeft: theme.spacing(3),
-              width: 'auto',
+                marginLeft: theme.spacing(3),
+                width: 'auto',
             },
         },
         searchIcon: {
@@ -121,7 +121,7 @@ function NavBar(props) {
             transition: theme.transitions.create('width'),
             width: '100%',
             [theme.breakpoints.up('md')]: {
-              width: '20ch',
+                width: '20ch',
             },
         },
         avatar: {
@@ -155,7 +155,7 @@ function NavBar(props) {
     }
 
     const startToSearch = () => {
-        if(searchText) props.onStartToSearch(searchText)
+        if (searchText) props.onStartToSearch(searchText)
     }
 
     const [anchorEl, setAnchorEl] = useState(null)
@@ -171,7 +171,7 @@ function NavBar(props) {
     const toLogin = () => {
         closeMenu()
         // 跳转登录页面
-        history.push('/login')
+        history.push('/account/login')
     }
 
     const toLogout = () => {
@@ -195,38 +195,38 @@ function NavBar(props) {
 
                     {/* 左侧菜单按钮 md以上隐藏 */}
                     <Hidden mdUp>
-                        <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'Menu'} onClick={isHome ? clickDrawer : goBack}>{ isHome ? <MenuIcon /> : <NavigateBeforeIcon /> }</IconButton>
+                        <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'Menu'} onClick={isHome ? clickDrawer : goBack}>{isHome ? <MenuIcon /> : <NavigateBeforeIcon />}</IconButton>
                     </Hidden>
 
                     {/* logo  md以下隐藏 */}
                     <Hidden mdDown>
                         <img className={classes.logo} src={logoImg} alt={props.appConfig.appName} onClick={toHomePage} />
                     </Hidden>
-                    
+
                     {/* 标题 */}
                     <Typography noWrap className={classes.navtitle}>{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
-                    
+
                     {/* 搜索框 md以上隐藏 */}
                     <Hidden mdUp>
 
                         {
-                            isSearch && 
+                            isSearch &&
                             <div className={classes.search}>
                                 <div className={classes.searchIcon}>
-                                  <SearchIcon />
+                                    <SearchIcon />
                                 </div>
                                 <InputBase
                                     type='search'
-                                    placeholder={ `${ props.search && props.search.placeholder ? props.search.placeholder : '搜索' }` }
-                                    autoFocus={ props.search && props.search.autoFocus ? props.search.autoFocus : false }
-                                    defaultValue={ props.search && props.search.defaultValue ? props.search.defaultValue : '' }
-                                    onChange = { searchChange }
+                                    placeholder={`${props.search && props.search.placeholder ? props.search.placeholder : '搜索'}`}
+                                    autoFocus={props.search && props.search.autoFocus ? props.search.autoFocus : false}
+                                    defaultValue={props.search && props.search.defaultValue ? props.search.defaultValue : ''}
+                                    onChange={searchChange}
                                     classes={{
                                         root: classes.inputRoot,
                                         input: classes.inputInput,
                                     }}
                                     inputProps={{ 'aria-label': 'search' }}
-                                    endAdornment={ searchText && <TelegramIcon position='end' onClick={startToSearch} /> }
+                                    endAdornment={searchText && <TelegramIcon position='end' onClick={startToSearch} />}
                                 />
                             </div>
                         }
@@ -256,7 +256,7 @@ function NavBar(props) {
                                         <AccountCircle />
                                 }
                             </IconButton>
-                            
+
                             {/* 弹出popup的menu */}
                             <Menu
                                 id="account-appbar"
@@ -286,11 +286,11 @@ function NavBar(props) {
 }
 
 const mapStateToProps = (state, ownprops) => {
-    return {...ownprops, ...state}
+    return { ...ownprops, ...state }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ actionLogout,updateAppDrawerOpen }, dispatch)
+    return bindActionCreators({ actionLogout, updateAppDrawerOpen }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

@@ -13,7 +13,7 @@ import GuideShopping from '../../assets/imgs/guide/ic_shopping.png'
 import GuideChatting from '../../assets/imgs/guide/ic_chatting.png'
 import GuideDelivery from '../../assets/imgs/guide/ic_delivery.png'
 
-import { gethomepagedata } from '../../api/homeapi';
+import { gethomepagedataapi } from '../../api/homeapi';
 import SwiperCore, { Pagination, Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.scss';
@@ -354,7 +354,7 @@ function Home(props) {
         () => {
             console.log(`更新了数据  开始获取接口内容`)
             // 获取首页的数据
-            gethomepagedata().then(response => {
+            gethomepagedataapi().then(response => {
                 // 获取首页数据成功
                 setState({
                     carouselList: response.data.carouselList,
