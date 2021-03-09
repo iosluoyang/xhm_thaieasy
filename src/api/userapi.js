@@ -4,7 +4,7 @@ export function registerapi(data) {
     return axiosinstance.request({ url: '/app/user/register.do', data })
 }
 export function activeaccountapi(data) {
-    return axiosinstance.request({ url: '/app/user/activate.do' })
+    return axiosinstance.request({ url: '/app/user/activate.do', data })
 }
 
 export function loginapi(data) {

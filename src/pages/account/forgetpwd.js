@@ -101,7 +101,7 @@ export default function ForgetPwd(props) {
         <Box className={classes.root}>
 
             {/* 导航栏 */}
-            <NavBar navtitle={`注册`}></NavBar>
+            <NavBar navtitle={`${'忘记密码'}`}></NavBar>
 
             {/* 填写的内容区域 */}
             <Container maxWidth='sm'>
@@ -117,7 +117,7 @@ export default function ForgetPwd(props) {
                                 <MailOutlineIcon />
                             </Grid>
                             <Grid item xs={9}>
-                                <TextField required id="email" variant='outlined' label={`邮箱`} value={email} onChange={typeEmail} />
+                                <TextField required id="email" variant='standard' label={`邮箱`} value={email} onChange={typeEmail} />
                             </Grid>
                         </Grid>
 
@@ -201,7 +201,7 @@ export default function ForgetPwd(props) {
                                 <PhoneIcon />
                             </Grid>
                             <Grid item xs={9}>
-                                <TextField id="phone" variant='outlined' label={`手机号`} value={phone} onChange={typePhone} />
+                                <TextField id="phone" variant='standard' label={`手机号`} value={phone} onChange={typePhone} />
                             </Grid>
                         </Grid>
 
@@ -215,7 +215,7 @@ export default function ForgetPwd(props) {
                                 <AccountBoxIcon />
                             </Grid>
                             <Grid item xs={9}>
-                                <TextField id="username" variant='outlined' label={`昵称`} value={userName} onChange={typeUserName} />
+                                <TextField id="username" variant='standard' label={`昵称`} value={userName} onChange={typeUserName} />
                             </Grid>
                         </Grid>
 

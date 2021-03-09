@@ -34,7 +34,7 @@ let routes = [
                 component: Register,
             },
             {
-                path: 'activeaccount/:code',
+                path: '/activeaccount/:code',
                 component: ActiveAccnount,
             },
             {
