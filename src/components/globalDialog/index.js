@@ -29,13 +29,17 @@ export default function GlobalDialog(props) {
     const confirmDialog = () => {
 
         setShowDialog(false)
-        dialogCallBack.callBack({ type: 'confirm' })
+        if (dialogCallBack.callBack) {
+            dialogCallBack.callBack({ type: 'confirm' })
+        }
 
     }
 
     const cancelDialog = () => {
         setShowDialog(false)
-        dialogCallBack.callBack({ type: 'cancel' })
+        if (dialogCallBack.callBack) {
+            dialogCallBack.callBack({ type: 'cancel' })
+        }
     }
 
     return (
@@ -53,11 +57,9 @@ export default function GlobalDialog(props) {
             <DialogActions>
                 {/* 取消按钮仅在dialogType为confirm时出现 */}
                 {
-                    dialogType === 'confirm' && <Button onClick={cancelDialog} color="primary">{`取消`}</Button>
+                    dialogType === 'confirm' && <Button onClick={cancelDialog} color="primary">{`${'取消'}`}</Button>
                 }
-                <Button onClick={confirmDialog} color="primary" autoFocus>
-                    {`确定`}
-                </Button>
+                <Button onClick={confirmDialog} color="primary" autoFocus> {`${'确定'}`}</Button>
             </DialogActions>
         </Dialog>
     )

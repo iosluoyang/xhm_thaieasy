@@ -10,4 +10,20 @@ export default class utils {
         console.error('全局dialog显示错误', title, content, type, callBack)
     }
 
+
+    // 节流函数
+    static throttle = (fn, delay) => {
+        let timer = null
+        return function () {
+            let that = this
+            let args = arguments
+            if (!timer) {
+                timer = setTimeout(() => {
+                    fn.apply(that, args)
+                    timer = null
+                }, delay);
+            }
+        }
+    }
+
 }

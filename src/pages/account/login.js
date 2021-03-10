@@ -71,7 +71,14 @@ function Login(props) {
             // 登录成功 跳转页面
             history.goBack()
         }).catch(error => {
-            utils.showToast(error.msg || error, 'error')
+
+            // 账号未激活
+            if (error.errorCode === 'E20003') {
+                utils.showDialog(`${'提示'}`, `${`该账号${userName}暂未激活,请前往邮箱进行激活`}`, 'normal')
+            }
+            else {
+                utils.showToast(error.msg || error, 'error')
+            }
         })
 
     }
@@ -158,7 +165,7 @@ function Login(props) {
 
                     {/* 登录按钮 */}
                     <Grid item>
-                        <Button className={classes.width100} variant="contained" color="primary" onClick={login} >
+                        <Button className={classes.width100} variant="contained" color="primary" onClick={utils.throttle(login, 300)} >
                             {`登录`}
                         </Button>
                     </Grid>
