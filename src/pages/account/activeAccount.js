@@ -15,7 +15,9 @@ function ActiveAccnount(props) {
     const useStyles = makeStyles((theme) => ({
         root: {
             height: '100vh',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            background: `url(${require('../../assets/imgs/welcome.png')}) no-repeat left bottom`,
+            backgroundSize: 'contain'
         }
     }))
     const classes = useStyles()
@@ -53,7 +55,7 @@ function ActiveAccnount(props) {
     }, [])
 
     return (
-        <Box height='100vh' paddingX={2} paddingY={10} boxSizing='border-box' textAlign='center' bgcolor='warning.main'>
+        <Box className={classes.root} height='100vh' paddingX={2} paddingY={10} boxSizing='border-box' textAlign='center' bgcolor='warning.main'>
 
             <Typography component='div'>
                 <Box color='#FFFFFF' fontWeight='fontWeightLight'>{`${'欢迎加入ThaiEasy'}`}</Box>

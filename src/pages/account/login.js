@@ -73,7 +73,7 @@ function Login(props) {
         }).catch(error => {
 
             // 账号未激活
-            if (error.errorCode === 'E20003') {
+            if (error.errorCode === 'E10030') {
                 utils.showDialog(`${'提示'}`, `${`该账号${userName}暂未激活,请前往邮箱进行激活`}`, 'normal')
             }
             else {

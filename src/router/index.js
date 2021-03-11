@@ -1,4 +1,4 @@
-import App from '../App'
+import { lazy } from 'react'
 import Layout from '../components/layout'
 import Home from '../pages/home'
 import Mission from '../pages/mission'
@@ -8,14 +8,21 @@ import Account from '../pages/account'
 import Login from '../pages/account/login'
 import Register from '../pages/account/register'
 import ForgetPwd from '../pages/account/forgetpwd'
-
-
-import WishProduct from '../pages/wishproduct'
-import WishProductList from '../pages/wishproduct/productlist'
-import HandleProduct from '../pages/wishproduct/handleproduct.js'
 import ActiveAccnount from '../pages/account/activeAccount'
 
+
+// 代码分割  路由懒加载
+// import WishProduct from '../pages/wishproduct'
+// import WishProductList from '../pages/wishproduct/productlist'
+// import HandleProduct from '../pages/wishproduct/handleproduct'
+
+const WishProduct = lazy(() => import('../pages/wishproduct'))
+const WishProductList = lazy(() => import('../pages/wishproduct/productlist'))
+const HandleProduct = lazy(() => import('../pages/wishproduct/handleproduct'))
+
+
 let routes = [
+
     {
         path: '/account',
         component: Account,
@@ -76,7 +83,6 @@ let routes = [
             },
         ]
     },
-
 
 ]
 

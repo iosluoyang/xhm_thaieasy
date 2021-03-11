@@ -1,6 +1,7 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Switch, Route } from 'react-router-dom';
 import routes from './router'
+import { CircularProgress } from '@material-ui/core'
 import './App.css';
 import GlobalSnackbar from './components/globalSnackbar';
 import GlobalDialog from "./components/globalDialog";
@@ -15,8 +16,7 @@ function App() {
       <GlobalSnackbar />
       {/* 全局Dialog框 */}
       <GlobalDialog />
-      
-      {
+      <Suspense fallback={<CircularProgress />}>
         <Switch>
           {
             routes.map((route, index) => {
@@ -32,7 +32,7 @@ function App() {
             })
           }
         </Switch>
-      }
+      </Suspense>
 
     </div>
 
