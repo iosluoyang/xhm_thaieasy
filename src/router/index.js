@@ -7,7 +7,7 @@ import Me from '../pages/me'
 import Account from '../pages/account'
 import Login from '../pages/account/login'
 import Register from '../pages/account/register'
-import ForgetPwd from '../pages/account/forgetpwd'
+import HandlePwd from '../pages/account/handlePwd'
 import ActiveAccnount from '../pages/account/activeAccount'
 
 
@@ -41,12 +41,12 @@ let routes = [
                 component: Register,
             },
             {
-                path: '/activeaccount/:code',
+                path: '/activeaccount/:code?',
                 component: ActiveAccnount,
             },
             {
-                path: '/forgetpwd',
-                component: ForgetPwd,
+                path: '/handlepwd/:type/:code?', // type reset为重置密码(需要传对应uid和旧密码)  forget为忘记密码(需要传code)
+                component: HandlePwd,
             }
         ]
     },

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import utils from '../../utils';
+import utils from '@/utils';
 import md5 from 'js-md5';
-import { registerapi, sendactiveapi, activeaccountapi } from "../../api/userapi";
-import NavBar from '../../components/layout/navbar';
+import { registerapi, sendactiveapi, activeaccountapi } from "@/api/userapi";
+import NavBar from '@/components/layout/navbar';
 import { Box, Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui//core/styles';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
@@ -280,7 +280,7 @@ export default function Register(props) {
 
                     {/* 注册按钮 */}
                     <Grid item>
-                        <Button className={classes.width100} variant="contained" color="primary" onClick={utils.throttle(register, 300)}>{`${'注册'}`}</Button>
+                        <Button className={classes.width100} variant="contained" color="primary" onClick={utils.throttle(register)}>{`${'注册'}`}</Button>
                     </Grid>
 
                 </Grid>
@@ -300,7 +300,7 @@ export default function Register(props) {
                     <Button onClick={() => { setOpenDialog(false); history.goBack() }} color='secondary'>
                         {`${'取消'}`}
                     </Button>
-                    <Button onClick={activeAccount} color="primary">
+                    <Button onClick={utils.throttle(activeAccount)} color="primary">
                         {`${'确定'}`}
                     </Button>
                 </DialogActions>

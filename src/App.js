@@ -1,10 +1,11 @@
 import React, { Suspense } from "react";
 import { Switch, Route } from 'react-router-dom';
-import routes from './router'
+import routes from '@/router'
 import { CircularProgress } from '@material-ui/core'
-import './App.css';
-import GlobalSnackbar from './components/globalSnackbar';
-import GlobalDialog from "./components/globalDialog";
+import '@/App.css';
+import GlobalSnackbar from '@/components/globalSnackbar';
+import GlobalDialog from "@/components/globalDialog";
+import GlobalLoading from '@/components/globalLoading';
 
 function App() {
 
@@ -14,6 +15,8 @@ function App() {
 
       {/* 全局Toast框 */}
       <GlobalSnackbar />
+      {/* 全局Loading框 */}
+      <GlobalLoading />
       {/* 全局Dialog框 */}
       <GlobalDialog />
       <Suspense fallback={<CircularProgress />}>

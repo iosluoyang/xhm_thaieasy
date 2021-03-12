@@ -1,9 +1,14 @@
+import jsmd5 from 'js-md5';
+
 export default class utils {
 
     // 全局显示toast框
     static showToast = (msg, type = 'info') => {
         console.error('全局toast显示错误', msg, type);
     }
+
+    // 全局显示loading
+    static showLoading
 
     // 全局显示dialog提示框  type: normal/confirm  callBack 点击确定/取消之后的函数回调
     static showDialog = (title, content, type = 'normal', callBack) => {
@@ -12,7 +17,7 @@ export default class utils {
 
 
     // 节流函数
-    static throttle = (fn, delay) => {
+    static throttle = (fn, delay = 1000) => {
         let timer = null
         return function () {
             let that = this
@@ -25,5 +30,7 @@ export default class utils {
             }
         }
     }
+
+    static md5 = jsmd5
 
 }

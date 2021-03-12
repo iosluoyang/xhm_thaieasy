@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import utils from '../../utils';
+import utils from '@/utils';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@material-ui/core";
 
 export default function GlobalDialog(props) {
