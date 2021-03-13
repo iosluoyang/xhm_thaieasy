@@ -6,6 +6,7 @@ import '@/App.css';
 import GlobalSnackbar from '@/components/globalSnackbar';
 import GlobalDialog from "@/components/globalDialog";
 import GlobalLoading from '@/components/globalLoading';
+import AuthRoute from '@/components/AuthRoute';
 
 function App() {
 
@@ -25,12 +26,13 @@ function App() {
             routes.map((route, index) => {
               return (
 
-                <Route key={index} exact={route.exact} path={route.path}
-                  render={props => (
-                    // 传递嵌套路由到子组件
-                    <route.component {...props} routes={route.routes} />
-                  )}
-                ></Route>
+                <AuthRoute key={route.path} {...route}></AuthRoute>
+                // <Route key={index} exact={route.exact} path={route.path}
+                //   render={props => (
+                //     // 传递嵌套路由到子组件
+                //     <route.component {...props} routes={route.routes} />
+                //   )}
+                // ></Route>
               )
             })
           }

@@ -16,12 +16,12 @@ import ActiveAccnount from '../pages/account/activeAccount'
 // import WishProductList from '../pages/wishproduct/productlist'
 // import HandleProduct from '../pages/wishproduct/handleproduct'
 
-const WishProduct = lazy(() => import('../pages/wishproduct'))
-const WishProductList = lazy(() => import('../pages/wishproduct/productlist'))
-const HandleProduct = lazy(() => import('../pages/wishproduct/handleproduct'))
+// const WishProduct = lazy(() => import('../pages/wishproduct'))
+// const WishProductList = lazy(() => import('../pages/wishproduct/productlist'))
+// const HandleProduct = lazy(() => import('../pages/wishproduct/handleproduct'))
 
 
-let routes = [
+const publicRoutes = [
 
     {
         path: '/account',
@@ -51,21 +51,6 @@ let routes = [
         ]
     },
     {
-        path: '/wishproduct',
-        component: WishProduct,
-        auth: true,
-        routes: [
-            {
-                path: '/productlist',
-                component: WishProductList,
-            },
-            {
-                path: '/handleproduct/:type',
-                component: HandleProduct,
-            }
-        ]
-    },
-    {
         path: '/',// 首页默认加载的页面
         component: Layout,// 所使用的组件
         routes: [
@@ -87,4 +72,4 @@ let routes = [
 
 ]
 
-export default routes
+export default publicRoutes

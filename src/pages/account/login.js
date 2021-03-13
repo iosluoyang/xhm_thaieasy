@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { actionLogin } from '@/store/actionCreator';
-import { sendsetpwdemailapi } from '@/api/userapi';
+import { sendsetpwdemailapi, sendactiveapi } from '@/api/userapi';
 import NavBar from "@/components/layout/navbar";
 import { Box, Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -76,6 +76,20 @@ function Login(props) {
 
     }
 
+    // 发送激活账号的邮件
+    const sendActiveAccountEmail = () => {
+
+        // 重新发送激活邮件
+        sendactiveapi({ email: email }).then(response => {
+            // 发送成功
+            utils.showDialog(``, `激活邮件已经发送到您的邮箱,请尽快进行激活,激活后可使用该邮箱登陆。`, 'normal')
+        }).catch(error => {
+            // 发送失败
+            utils.showToast(error.msg, 'error')
+        })
+
+    }
+
     // 登录
     const login = () => {
 
@@ -105,7 +119,12 @@ function Login(props) {
             utils.showLoading(false)
             // 账号未激活
             if (error.errorCode === 'E10030') {
-                utils.showDialog(`${'提示'}`, `${`该邮箱${email}暂未激活,请前往邮箱进行激活`}`, 'normal')
+                utils.showDialog(`${'提示'}`, `${`该邮箱${email}暂未激活,请前往邮箱进行激活。如您找不到激活邮件,是否重新发送激活邮件?`}`, 'confirm', (callbackData) => {
+                    if (callbackData.type === 'confirm') {
+                        // 重新发送激活邮件
+                        sendActiveAccountEmail()
+                    }
+                })
             }
             else {
                 utils.showToast(error.msg || error, 'error')

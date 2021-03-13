@@ -9,14 +9,14 @@ export default function WishProduct(props) {
 
     return (
         <Box>
-
+            <h6>我是 wishproduct 页面</h6>
             {/* 中间内容区域 */}
             <Switch>
                 {
                     routes.map((route, index) => {
                         return (
-                            <Route exact={route.exact} key={index} path={ match.url + route.path} component={route.component} />
-                         )
+                            <Route exact={route.exact} key={index} path={match.url + route.path} component={route.component} />
+                        )
                     })
                 }
             </Switch>
