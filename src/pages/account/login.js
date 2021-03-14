@@ -5,17 +5,14 @@ import { bindActionCreators } from 'redux';
 import { actionLogin } from '@/store/actionCreator';
 import { sendsetpwdemailapi, sendactiveapi } from '@/api/userapi';
 import NavBar from "@/components/layout/navbar";
-import { Box, Container, Grid, TextField, Button, FormControl, InputAdornment, InputLabel, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Container, Grid, TextField, RadioGroup, Radio, Button, FormControl, InputAdornment, InputLabel, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormLabel, FormControlLabel } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { AccountBox, VpnKey, Visibility, VisibilityOff } from '@material-ui/icons'
 import utils from '@/utils';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import md5 from 'js-md5';
 
 function Login(props) {
 
+    const theme = useTheme()
     const useStyles = makeStyles(theme => ({
 
         root: {
@@ -29,12 +26,18 @@ function Login(props) {
 
     const history = useHistory()
 
+    const [userType, setUserType] = useState(1) // 用户身份类型  0超级管理员 1普通用户  2系统管理员  默认为普通用户
+
     const [email, setEmail] = useState('')
+    const [account, setAccount] = useState('')
     const [pwd, setPwd] = useState('')
     const [showPwd, setShowPwd] = useState(false)
 
     const typeEmail = (event) => {
         setEmail(event.target.value)
+    }
+    const typeAccount = (event) => {
+        setAccount(event.target.value)
     }
     const typePwd = (event) => {
         setPwd(event.target.value)
@@ -94,8 +97,13 @@ function Login(props) {
     const login = () => {
 
         // 检查数据
-        if (!email) {
+
+        if (userType === 1 && !email) {
             utils.showToast('请输入邮箱地址', 'info')
+            return
+        }
+        else if ((userType === 0 || userType === 2) && !account) {
+            utils.showToast('请输入账号', 'info')
             return
         }
         else if (!pwd) {
@@ -106,10 +114,7 @@ function Login(props) {
         utils.showLoading(true)
 
         // 调用登录接口
-        let data = {
-            email: email,
-            pwd: md5(pwd)
-        }
+        let data = Object.assign({}, { pwd: utils.md5(pwd) }, userType === 1 ? { email: email } : { account: account })
         props.actionLogin(data).then(response => {
             utils.showLoading(false)
             utils.showToast('登录成功', 'success')
@@ -143,22 +148,54 @@ function Login(props) {
             {/* 填写的内容区域 */}
             <Container maxWidth='sm'>
 
+                {/* 身份类型 */}
+                <FormControl style={{ paddingLeft: theme.spacing(2) }}>
+                    <FormLabel>{`${'身份类型'}`}</FormLabel>
+                    <RadioGroup row value={userType} onChange={(e) => { setUserType(parseInt(e.target.value)) }}>
+
+                        <FormControlLabel value={1} control={<Radio />} label={`${'普通用户'}`}></FormControlLabel>
+                        <FormControlLabel value={2} control={<Radio />} label={`${'系统管理员'}`}></FormControlLabel>
+
+                    </RadioGroup>
+
+                </FormControl>
+
                 {/* 登录填写的内容区域 */}
                 <Grid container direction='column' spacing={3} justify="flex-start" alignItems='stretch'>
 
-                    {/* 邮箱 */}
-                    <Grid item>
+                    {/* 邮箱(用户身份时) */}
+                    {
+                        userType === 1 &&
+                        <Grid item>
 
-                        <Grid container spacing={2} justify="center" alignItems="flex-end">
-                            <Grid item xs={2}>
-                                <AccountBoxIcon />
+                            <Grid container spacing={2} justify="center" alignItems="flex-end">
+                                <Grid item xs={2}>
+                                    <AccountBox />
+                                </Grid>
+                                <Grid item xs={9}>
+                                    <TextField id="email" label={`${'邮箱'}`} value={email} onChange={typeEmail} />
+                                </Grid>
                             </Grid>
-                            <Grid item xs={9}>
-                                <TextField id="account" label={`${'邮箱'}`} value={email} onChange={typeEmail} />
-                            </Grid>
+
                         </Grid>
+                    }
 
-                    </Grid>
+                    {/* 账号(管理员) */}
+                    {
+                        (userType === 0 || userType === 2) &&
+                        <Grid item>
+
+                            <Grid container spacing={2} justify="center" alignItems="flex-end">
+                                <Grid item xs={2}>
+                                    <AccountBox />
+                                </Grid>
+                                <Grid item xs={9}>
+                                    <TextField id="account" label={`${'账号'}`} value={account} onChange={typeAccount} />
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+                    }
 
                     {/* 密码 */}
                     <Grid item>
@@ -166,7 +203,7 @@ function Login(props) {
                         <Grid container spacing={2} justify="center" alignItems="flex-end">
 
                             <Grid item xs={2}>
-                                <VpnKeyIcon />
+                                <VpnKey />
                             </Grid>
                             <Grid item xs={9}>
 
@@ -230,7 +267,7 @@ function Login(props) {
                 <DialogTitle>{`${'忘记密码'}`}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>{`${`请输入您的邮箱地址,点击邮件中的链接进行重置密码`}`}</DialogContentText>
-                    <TextField autoFocus margin='dense' fullWidth value={email} onChange={(e) => { setFindEmail(e.target.value) }}></TextField>
+                    <TextField autoFocus margin='dense' fullWidth value={findEmail} onChange={(e) => { setFindEmail(e.target.value) }}></TextField>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => { setOpenDialog(false) }} color='secondary'>

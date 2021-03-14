@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import routes from '@/router'
 import { CircularProgress } from '@material-ui/core'
 import '@/App.css';

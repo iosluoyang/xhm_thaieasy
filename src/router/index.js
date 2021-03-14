@@ -53,7 +53,7 @@ let routes = [
     {
         path: '/wishproduct',
         component: WishProduct,
-        auth: true,
+        auth: true, // 需要登录鉴权
         routes: [
             {
                 path: '/productlist',
@@ -69,19 +69,21 @@ let routes = [
         path: '/',// 首页默认加载的页面
         component: Layout,// 所使用的组件
         routes: [
-            {
-                path: '',
-                component: Home,
-                exact: true
-            },
+
             {
                 path: '/mission',
                 component: Mission,
+                auth: true, // 需要登录鉴权
             },
             {
                 path: '/me',
                 component: Me,
             },
+            {
+                path: '',
+                component: Home,
+            },
+
         ]
     },
 

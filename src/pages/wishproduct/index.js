@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { Box } from '@material-ui/core';
+import AuthRoute from '@/components/AuthRoute';
 
 export default function WishProduct(props) {
 
@@ -13,9 +14,10 @@ export default function WishProduct(props) {
             {/* 中间内容区域 */}
             <Switch>
                 {
-                    routes.map((route, index) => {
+                    routes && routes.length > 0 &&
+                    routes.map((route) => {
                         return (
-                            <Route exact={route.exact} key={index} path={match.url + route.path} component={route.component} />
+                            <AuthRoute key={route.path} {...{ ...route, ...{ path: match.url + route.path } }} ></AuthRoute>
                         )
                     })
                 }

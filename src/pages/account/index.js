@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { Box } from '@material-ui/core';
+import AuthRoute from '@/components/AuthRoute';
 
 export default function Account(props) {
 
@@ -15,7 +16,7 @@ export default function Account(props) {
                 {
                     routes.map((route, index) => {
                         return (
-                            <Route exact={route.exact} key={index} path={match.url + route.path} component={route.component} />
+                            <AuthRoute key={route.path} {...{ ...route, ...{ path: match.url + route.path } }} ></AuthRoute>
                         )
                     })
                 }

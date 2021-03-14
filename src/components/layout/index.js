@@ -1,10 +1,11 @@
 import React from 'react'
-import { Switch, Route } from "react-router-dom";
+import { Switch, useRouteMatch } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Hidden } from '@material-ui/core'
 import NavBar from './navbar'
 import TabBar from './tabbar'
 import AppDrawer from './drawer'
+import AuthRoute from '@/components/AuthRoute'
 
 export default function Layout(props) {
 
@@ -18,6 +19,8 @@ export default function Layout(props) {
     const classes = useStyles()
 
     const { routes } = props
+    const match = useRouteMatch()
+
 
     return (
 
@@ -29,9 +32,11 @@ export default function Layout(props) {
             {/* 中间内容区域 */}
             <Switch>
                 {
-                    routes.map((route, index) => {
+                    routes && routes.length > 0 &&
+                    routes.map((route) => {
                         return (
-                            <Route exact={route.exact} key={index} path={route.path} component={route.component} />
+                            // <AuthRoute key={route.path} {...{ ...route, ...{ path: match.url + route.path } }} ></AuthRoute>
+                            <AuthRoute key={route.path} {...route}></AuthRoute>
                         )
                     })
                 }
