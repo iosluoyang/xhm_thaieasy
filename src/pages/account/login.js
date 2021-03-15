@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { actionLogin } from '@/store/actionCreator';
@@ -12,11 +12,18 @@ import utils from '@/utils';
 
 function Login(props) {
 
+    const history = useHistory()
+    const location = useLocation()
+    const search = location.search
+    let searchParam = utils.queryString.parse(search)
+    let redirectPath = searchParam ? searchParam.redirectPath : null // 重定向地址
+
     const theme = useTheme()
     const useStyles = makeStyles(theme => ({
 
         root: {
-            paddingTop: '30px'
+            paddingTop: '80px',
+            boxSizing: 'border-box'
         },
         width100: {
             width: '100%'
@@ -24,7 +31,6 @@ function Login(props) {
     }))
     const classes = useStyles()
 
-    const history = useHistory()
 
     const [userType, setUserType] = useState(1) // 用户身份类型  0超级管理员 1普通用户  2系统管理员  默认为普通用户
 
@@ -116,10 +122,17 @@ function Login(props) {
         // 调用登录接口
         let data = Object.assign({}, { pwd: utils.md5(pwd) }, userType === 1 ? { email: email } : { account: account })
         props.actionLogin(data).then(response => {
+
             utils.showLoading(false)
             utils.showToast('登录成功', 'success')
-            // 登录成功 跳转页面
-            history.goBack()
+            // 登录成功 根据是否有重定向链接选择跳转的路径
+            if (redirectPath) {
+                history.replace(redirectPath)
+            }
+            else {
+                history.goBack()
+            }
+
         }).catch(error => {
             utils.showLoading(false)
             // 账号未激活

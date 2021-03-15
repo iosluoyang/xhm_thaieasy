@@ -337,7 +337,12 @@ function Home(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
+
+            minHeight: '100%',
+            paddingTop: '60px',
             paddingBottom: '56px',
+            boxSizing: 'border-box'
+
         }
     }))
     const classes = useStyles()

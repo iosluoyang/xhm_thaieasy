@@ -27,7 +27,9 @@ function HandleProduct(props) {
     const theme = useTheme()
     const useStyles = makeStyles((theme) => ({
         root: {
-            padding: theme.spacing(2),
+            paddingTop: '80px',
+            boxSizing: 'border-box',
+            backgroundColor: '#FFF',
 
             '& .contentview': {
 

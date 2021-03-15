@@ -72,7 +72,9 @@ function NavBar(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            marginBottom: '56px',
+            top: 0,
+            left: 0,
+            right: 0,
         },
         logo: {
             width: '50px',
@@ -188,98 +190,94 @@ function NavBar(props) {
 
     return (
 
-        <div className={classes.root} >
+        <AppBar className={classes.root} position="fixed">
+            <Toolbar>
 
-            <AppBar position="fixed">
-                <Toolbar>
+                {/* 左侧菜单按钮 md以上隐藏 */}
+                <Hidden mdUp>
+                    <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'Menu'} onClick={isHome ? clickDrawer : goBack}>{isHome ? <MenuIcon /> : <NavigateBeforeIcon />}</IconButton>
+                </Hidden>
 
-                    {/* 左侧菜单按钮 md以上隐藏 */}
-                    <Hidden mdUp>
-                        <IconButton edge="start" className={classes.leftButton} color="inherit" aria-label={isHome ? 'Home' : 'Menu'} onClick={isHome ? clickDrawer : goBack}>{isHome ? <MenuIcon /> : <NavigateBeforeIcon />}</IconButton>
-                    </Hidden>
+                {/* logo  md以下隐藏 */}
+                <Hidden mdDown>
+                    <img className={classes.logo} src={logoImg} alt={props.appConfig.appName} onClick={toHomePage} />
+                </Hidden>
 
-                    {/* logo  md以下隐藏 */}
-                    <Hidden mdDown>
-                        <img className={classes.logo} src={logoImg} alt={props.appConfig.appName} onClick={toHomePage} />
-                    </Hidden>
+                {/* 标题 */}
+                <Typography noWrap className={classes.navtitle}>{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
 
-                    {/* 标题 */}
-                    <Typography noWrap className={classes.navtitle}>{isHome ? props.appConfig.appName : (props.navtitle || '')}</Typography>
+                {/* 搜索框 md以上隐藏 */}
+                <Hidden mdUp>
 
-                    {/* 搜索框 md以上隐藏 */}
-                    <Hidden mdUp>
-
-                        {
-                            isSearch &&
-                            <div className={classes.search}>
-                                <div className={classes.searchIcon}>
-                                    <SearchIcon />
-                                </div>
-                                <InputBase
-                                    type='search'
-                                    placeholder={`${props.search && props.search.placeholder ? props.search.placeholder : '搜索'}`}
-                                    autoFocus={props.search && props.search.autoFocus ? props.search.autoFocus : false}
-                                    defaultValue={props.search && props.search.defaultValue ? props.search.defaultValue : ''}
-                                    onChange={searchChange}
-                                    classes={{
-                                        root: classes.inputRoot,
-                                        input: classes.inputInput,
-                                    }}
-                                    inputProps={{ 'aria-label': 'search' }}
-                                    endAdornment={searchText && <TelegramIcon position='end' onClick={startToSearch} />}
-                                />
+                    {
+                        isSearch &&
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
                             </div>
-                        }
+                            <InputBase
+                                type='search'
+                                placeholder={`${props.search && props.search.placeholder ? props.search.placeholder : '搜索'}`}
+                                autoFocus={props.search && props.search.autoFocus ? props.search.autoFocus : false}
+                                defaultValue={props.search && props.search.defaultValue ? props.search.defaultValue : ''}
+                                onChange={searchChange}
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                                endAdornment={searchText && <TelegramIcon position='end' onClick={startToSearch} />}
+                            />
+                        </div>
+                    }
 
-                    </Hidden>
+                </Hidden>
 
-                    {/* 导航区域 md以下隐藏 */}
-                    <Hidden mdDown>
-                        {<NavLinkPanel {...props}></NavLinkPanel>}
-                    </Hidden>
+                {/* 导航区域 md以下隐藏 */}
+                <Hidden mdDown>
+                    {<NavLinkPanel {...props}></NavLinkPanel>}
+                </Hidden>
 
-                    {/* 右侧按钮区域  md以下隐藏*/}
-                    <Hidden mdDown>
-                        <Box display='flex' justifyContent='flex-end' alignItems='center' className='btndiv'>
-                            {/* 用户头像按钮 */}
-                            <IconButton
-                                aria-label="User"
-                                aria-controls="account-appbar"
-                                aria-haspopup="true"
-                                onClick={openMenu}
-                                color="inherit"
-                            >
-                                {
-                                    props.appUser.user ?
-                                        <Avatar className={classes.avatar} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
-                                        :
-                                        <AccountCircle />
-                                }
-                            </IconButton>
+                {/* 右侧按钮区域  md以下隐藏*/}
+                <Hidden mdDown>
+                    <Box display='flex' justifyContent='flex-end' alignItems='center' className='btndiv'>
+                        {/* 用户头像按钮 */}
+                        <IconButton
+                            aria-label="User"
+                            aria-controls="account-appbar"
+                            aria-haspopup="true"
+                            onClick={openMenu}
+                            color="inherit"
+                        >
+                            {
+                                props.appUser.user ?
+                                    <Avatar className={classes.avatar} src={props.appConfig.imgUrl + props.appUser.user.avatar}></Avatar>
+                                    :
+                                    <AccountCircle />
+                            }
+                        </IconButton>
 
-                            {/* 弹出popup的menu */}
-                            <Menu
-                                id="account-appbar"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                TransitionComponent={Fade}
-                                open={Boolean(anchorEl)}
-                                onClose={closeMenu}
-                            >
-                                {
-                                    !props.appUser.user && <MenuItem onClick={toLogin}>登录</MenuItem>
-                                }
-                                {
-                                    props.appUser.user && <MenuItem onClick={toLogout}>登出</MenuItem>
-                                }
-                            </Menu>
-                        </Box>
-                    </Hidden>
+                        {/* 弹出popup的menu */}
+                        <Menu
+                            id="account-appbar"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            TransitionComponent={Fade}
+                            open={Boolean(anchorEl)}
+                            onClose={closeMenu}
+                        >
+                            {
+                                !props.appUser.user && <MenuItem onClick={toLogin}>登录</MenuItem>
+                            }
+                            {
+                                props.appUser.user && <MenuItem onClick={toLogout}>登出</MenuItem>
+                            }
+                        </Menu>
+                    </Box>
+                </Hidden>
 
-                </Toolbar>
-            </AppBar>
-
-        </div>
+            </Toolbar>
+        </AppBar>
 
     )
 

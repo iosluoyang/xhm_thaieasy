@@ -20,7 +20,8 @@ export default function Register(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            paddingTop: '30px'
+            paddingTop: '80px',
+            boxSizing: 'border-box'
         },
 
         width100: {

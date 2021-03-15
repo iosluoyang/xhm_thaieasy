@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, BottomNavigation, BottomNavigationAction } from '@material-ui/core'
 import HomeIcon from '@material-ui/icons/Home';
@@ -22,30 +22,32 @@ export default function TabBar(props) {
     const owntabs = [
         {
             title: `${'首页'}`,
-            value: 'home',
+            value: '/',
             link: '/',
             icon: <HomeIcon />
         },
         {
             title: `${'任务单'}`,
-            value: 'mission',
+            value: '/mission',
             link: '/mission',
             icon: <FavoriteIcon />
         },
         {
             title: `${'我'}`,
-            value: 'me',
+            value: '/me',
             link: '/me',
             icon: <LocationOnIcon />
         }
     ]
     const [tabs, setTabs] = useState(owntabs)
-    const [currenttabvalue, setCurrentTabValue] = useState(props.currentTabValue)
+
+    const location = useLocation()
+    const [currenttabvalue, setCurrentTabValue] = useState(location.pathname)
 
     return (
-        <Box borderTop={1} borderColor='grey.500' className={classes.root}>
+        <Box borderTop={1} borderColor='grey.200' className={classes.root}>
             <BottomNavigation
-                value={currenttabvalue || 'home'}
+                value={currenttabvalue || '/'}
                 onChange={(event, newValue) => {
                     setCurrentTabValue(newValue)
                 }}

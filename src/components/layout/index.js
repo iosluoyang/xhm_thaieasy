@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, useRouteMatch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Hidden } from '@material-ui/core'
 import NavBar from './navbar'
@@ -11,20 +11,18 @@ export default function Layout(props) {
 
     const useStyles = makeStyles((theme) => {
         return {
-            layout: {
-
+            root: {
+                height: '100%'
             }
         }
     })
     const classes = useStyles()
 
     const { routes } = props
-    const match = useRouteMatch()
-
 
     return (
 
-        <Box className={classes.layout}>
+        <Box className={classes.root}>
 
             {/* 头部导航 */}
             <NavBar isHome></ NavBar>
@@ -44,7 +42,7 @@ export default function Layout(props) {
 
             {/* 底部导航 sm尺寸之上隐藏 */}
             <Hidden smUp>
-                <TabBar currentTabValue='home'></ TabBar>
+                <TabBar></ TabBar>
             </Hidden>
 
             {/* 侧边栏弹出框 */}

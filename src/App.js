@@ -1,7 +1,8 @@
 import React, { Suspense } from "react";
 import { Switch } from 'react-router-dom';
-import routes from '@/router'
-import { CircularProgress } from '@material-ui/core'
+import routes from '@/router';
+import { LinearProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import '@/App.css';
 import GlobalSnackbar from '@/components/globalSnackbar';
 import GlobalDialog from "@/components/globalDialog";
@@ -10,9 +11,17 @@ import AuthRoute from '@/components/AuthRoute';
 
 function App() {
 
+  const useStyles = makeStyles((theme) => ({
+    App: {
+      height: '100vh'
+    }
+  }))
+
+  const classes = useStyles()
+
   return (
 
-    <div className="App">
+    <div className={classes.App}>
 
       {/* 全局Toast框 */}
       <GlobalSnackbar />
@@ -20,7 +29,7 @@ function App() {
       <GlobalLoading />
       {/* 全局Dialog框 */}
       <GlobalDialog />
-      <Suspense fallback={<CircularProgress />}>
+      <Suspense fallback={<LinearProgress />}>
         <Switch>
           {
             routes.map((route, index) => {

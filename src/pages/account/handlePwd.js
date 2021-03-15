@@ -10,15 +10,12 @@ import { MailOutline, VpnKey, Visibility, VisibilityOff } from '@material-ui/ico
 
 export default function ForgetPwd(props) {
 
-    const history = useHistory()
     const { type, code } = useParams()
     console.log(`当前密码操作类型为:${type}code为${code}`)
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            paddingTop: '30px',
-            height: '100vh',
-            boxSizing: 'border-box'
+            paddingTop: theme.spacing(6)
         },
 
         width100: {

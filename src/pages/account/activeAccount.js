@@ -18,8 +18,8 @@ function ActiveAccnount(props) {
 
     const useStyles = makeStyles((theme) => ({
         root: {
-            // height: '100vh',
-            // boxSizing: 'border-box',
+            height: '100vh',
+            boxSizing: 'border-box',
             background: `url(${welcomeGirl}),url(${welcomeFlower}),url(${welcomeBoy})`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'left bottom, center center, right bottom',
@@ -74,7 +74,7 @@ function ActiveAccnount(props) {
     }, [])
 
     return (
-        <Box className={classes.root} height='100vh' paddingX={2} paddingY={10} boxSizing='border-box' textAlign='center'>
+        <Box className={classes.root} paddingX={2} paddingY={10} textAlign='center'>
 
             <Typography component='div'>
                 <Box color='primary' fontWeight='fontWeightLight' marginBottom={5}>{tipStr}</Box>

@@ -1,21 +1,24 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles'
 
 
-function Me(props) {
+export default function Me() {
+
     const useStyles = makeStyles({
-        me: {
-            backgroundColor: 'green',
-            height: '50px',
-            fontSize: '20px'
+        root: {
+            minHeight: '100%',
+            paddingTop: '60px',
+            paddingBottom: '56px',
+            boxSizing: 'border-box'
         }
-    })
+    });
+
+    const classes = useStyles();
 
     return (
-        <div className="me">
-            { 'I am Me'}
-        </div>
+        <Box className={classes.root} bgcolor='success.main'>
+            <Typography variant='caption' color='textPrimary'>{`${'个人中心'}`}</Typography>
+        </Box>
     )
 }
-
-export default Me
