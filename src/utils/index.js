@@ -1,5 +1,6 @@
 import jsmd5 from 'js-md5';
 import queryString from 'query-string';
+import uploadImgs from './uploadImg';
 
 export default class utils {
 
@@ -35,5 +36,7 @@ export default class utils {
     static md5 = jsmd5
 
     static queryString = queryString
+
+    static uploadImgs = uploadImgs
 
 }

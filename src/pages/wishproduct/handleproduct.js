@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Box, TextField, InputAdornment, Select, MenuItem, ListItemIcon, ListItemText, Avatar, Button, Typography, CircularProgress, } from '@material-ui/core';
 import { ImagePicker } from 'antd-mobile';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import NavBar from "../../components/layout/navbar";
+import NavBar from "@/components/layout/navbar";
 
-import Icon1688Logo from '../../assets/icon/ic_1688logo.png';
-import IconTbLogo from '../../assets/icon/ic_tblogo.png';
+import Icon1688Logo from '@/assets/icon/ic_1688logo.png';
+import IconTbLogo from '@/assets/icon/ic_tblogo.png';
 import InsertLinkIcon from '@material-ui/icons/InsertLink';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import SendIcon from '@material-ui/icons/Send';
+import { FileCopy, Send } from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
-import utils from '../../utils';
-import { addproductapi } from '../../api/productapi'
+import utils from '@/utils';
+import { addproductapi } from '@/api/productapi'
 
 function HandleProduct(props) {
 
@@ -110,14 +109,26 @@ function HandleProduct(props) {
         console.log(index, files)
     }
 
-    const timer = useRef()
-
     const submitData = () => {
         if (!loading) {
 
             setLoading(true)
             console.log(`开始提交数据`)
-            finalSubmit()
+
+            // 根据是否有图片进行提交图片操作
+            // ...
+            // 有图片存在 遍历图片进行
+            if (imgs) {
+                utils.uploadImgs(imgs).then(response => {
+                    console.log(`上传完毕,返回结果为`)
+                    console.log(response)
+                    setLoading(false)
+                }).catch(error => {
+                    setLoading(false)
+                })
+            }
+
+            // finalSubmit()
 
         }
 
@@ -158,8 +169,6 @@ function HandleProduct(props) {
             setRemarkError(false)
         }
 
-        // 根据是否有图片进行提交图片操作
-        // ...
 
         // 开始提交数据
         let data = {
@@ -247,7 +256,7 @@ function HandleProduct(props) {
                                 // endAdornment: (
 
                                 //     <InputAdornment position='end'>
-                                //         <Button className={classes.endButton} variant='contained' size='small' color='primary' onClick={() => { setLink('xxx') }} startIcon={<FileCopyIcon />}>{`${'粘贴'}`}</Button>
+                                //         <Button className={classes.endButton} variant='contained' size='small' color='primary' onClick={() => { setLink('xxx') }} startIcon={<FileCopy />}>{`${'粘贴'}`}</Button>
                                 //     </InputAdornment>
 
                                 // )
@@ -283,7 +292,7 @@ function HandleProduct(props) {
                             variant='contained'
                             color='primary'
                             disabled={loading}
-                            endIcon={<SendIcon />}
+                            endIcon={<Send />}
                             onClick={submitData}
                         >
                             {`${'提交'}`}
