@@ -119,7 +119,7 @@ function HandleProduct(props) {
             // ...
             // 有图片存在 遍历图片进行
             if (imgs) {
-                utils.uploadImgs(imgs).then(response => {
+                utils.uploadImgsAsync(imgs).then(response => {
                     console.log(`上传完毕,返回结果为`)
                     console.log(response)
                     setLoading(false)

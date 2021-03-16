@@ -1,6 +1,6 @@
 // 用户相关的reducer
 import { combineReducers } from 'redux'
-import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION, UPDATE_APPDRAWEROPEN } from './actionType'
+import { UPDATE_ACCESSTOKEN, UPDATE_REFRESHTOKEN, UPDATE_USER, UPDATE_CONFIGARR, UPDATE_CONFIGVERSION, UPDATE_APPDRAWEROPEN, UPDATE_OSSCONFIG } from './actionType'
 
 /*
 
@@ -27,6 +27,8 @@ let initialState = {
         refreshToken: '',
         user: null
     },
+    ossConfig: null
+
 
 }
 
@@ -47,7 +49,7 @@ function ConfigReducer(appConfigState = initialState.appConfig, action) {
 
         // 更新全局抽屉的打开状态
         case UPDATE_APPDRAWEROPEN:
-            return { ...appConfigState, ...{ appDrawerOpen: action.data }}
+            return { ...appConfigState, ...{ appDrawerOpen: action.data } }
             break;
 
         // 其他情况返回默认的state
@@ -65,17 +67,17 @@ function UserReducer(appUserState = initialState.appUser, action) {
 
         // 更新accessToken
         case UPDATE_ACCESSTOKEN:
-            return {...appUserState,...{accessToken: action.data}}
+            return { ...appUserState, ...{ accessToken: action.data } }
             break;
 
         // 更新refreshToken
         case UPDATE_REFRESHTOKEN:
-            return {...appUserState,...{refreshToken: action.data}}
+            return { ...appUserState, ...{ refreshToken: action.data } }
             break;
 
         // 更新用户信息
         case UPDATE_USER:
-            return {...appUserState,...{user: action.data}}
+            return { ...appUserState, ...{ user: action.data } }
             break;
 
         // 其他情况返回默认的state
@@ -86,11 +88,27 @@ function UserReducer(appUserState = initialState.appUser, action) {
 
 }
 
+// OSS相关reducer
+function OSSReducer(ossConfigState = initialState.ossConfig, action) {
+    switch (action.type) {
+
+        // 更新oss配置信息
+        case UPDATE_OSSCONFIG:
+            return action.data
+            break;
+
+        default:
+            return ossConfigState
+            break;
+    }
+}
+
 // 整体的reducer
 const AppReducer = combineReducers({
 
     appConfig: ConfigReducer,
-    appUser: UserReducer
+    appUser: UserReducer,
+    ossConfig: OSSReducer
 
 })
 
