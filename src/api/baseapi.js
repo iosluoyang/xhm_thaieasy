@@ -9,3 +9,8 @@ export function getconfigdataapi(data) {
 export function getossconfigapi(data) {
     return axiosinstance.request({ url: '/aliyunsts/app/token/h5token.do', data })
 }
+
+// OSS上传文件
+export function ossuploadimgapi(requestConfig) {
+    return axiosinstance.request(requestConfig)
+}

@@ -13,6 +13,7 @@ import { FileCopy, Send } from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
 import utils from '@/utils';
 import { addproductapi } from '@/api/productapi'
+import { uploadImgs } from '../../utils/uploadImg';
 
 function HandleProduct(props) {
 
@@ -100,6 +101,7 @@ function HandleProduct(props) {
     } // 备注的输入过程
 
     const [imgs, setImgs] = useState([]) // 商品图片数组
+    const [uploadImgsUrl, setUploadImgsUrl] = useState('') // 上传商品图片字符串
     const [loading, setLoading] = useState(false) // 是否正在加载
     const onImgChange = (files, type, index) => {
         console.log(files, type, index);
@@ -119,16 +121,23 @@ function HandleProduct(props) {
             // ...
             // 有图片存在 遍历图片进行
             if (imgs) {
-                utils.uploadImgsAsync(imgs).then(response => {
+
+                console.log(uploadImgsUrl)
+                utils.uploadImgsAsync(imgs).then(imgsArr => {
                     console.log(`上传完毕,返回结果为`)
-                    console.log(response)
+                    console.log(imgsArr)
                     setLoading(false)
+                    let tempimgs = imgsArr.join(',')
+                    setUploadImgsUrl(tempimgs)
+                    console.log(uploadImgsUrl)
+
+                    // 开始最终提交
+                    finalSubmit()
+
                 }).catch(error => {
                     setLoading(false)
                 })
             }
-
-            // finalSubmit()
 
         }
 
@@ -176,18 +185,19 @@ function HandleProduct(props) {
             link: link,
             linkType: linkType,
             remark: remark,
-            imgs: '',
+            imgs: uploadImgsUrl,
             jobId: ''
         }
-        addproductapi(data).then(response => {
-            setLoading(false)
-            history.replace('/wishproduct/productlist')
-            utils.showToast(`${'提交成功'}`, 'success')
+        console.log(data)
+        // addproductapi(data).then(response => {
+        //     setLoading(false)
+        //     history.replace('/wishproduct/productlist')
+        //     utils.showToast(`${'提交成功'}`, 'success')
 
-        }).catch(error => {
-            setLoading(false)
-            utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
-        })
+        // }).catch(error => {
+        //     setLoading(false)
+        //     utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
+        // })
 
 
     }

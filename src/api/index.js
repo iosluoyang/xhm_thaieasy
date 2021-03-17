@@ -13,7 +13,10 @@ const instance = axios.create({
     baseURL: '/thaieasy/pro/apiapp',
     method: 'POST',
     timeout: 60000,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    params: {
+        requestType: 'normal' // 请求类型  默认为normal为正常请求 uploadossfile为上传oss文件 downloadossfile为下载oss文件
+    }
 });
 
 // 增加公共报文头
@@ -60,9 +63,10 @@ function makerequestparam(config) {
 
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
-    // 在发送请求之前增加公共报文头
-    config = makerequestparam(config)
-    return config;
+    // 在发送请求之前增加公共报文头（仅在正常接口请求下进行报文封装）
+    let requestType = config.params.requestType
+    if (requestType === 'normal') config = makerequestparam(config)
+    return config
 }, function (error) {
     // 对请求错误做些什么
     return Promise.reject(error);
@@ -72,6 +76,12 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
     // 接口返回成功
     if (response.status === 200) {
+
+        // 如果是非正常报文响应的话
+        if (response.config.params.requestType !== 'normal') {
+            return response
+        }
+
         // 处理公共错误码
         let responseData = response.data
         let errorCode = responseData.errorCode
