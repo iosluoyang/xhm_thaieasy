@@ -17,7 +17,6 @@ export default class utils {
         console.error('全局dialog显示错误', title, content, type, callBack)
     }
 
-
     // 节流函数
     static throttle = (fn, delay = 1000) => {
         let timer = null

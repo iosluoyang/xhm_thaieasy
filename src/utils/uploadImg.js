@@ -29,6 +29,7 @@ function random_string(len) {
 }
 
 // 同步上传图片
+// async函数会返回一个promise，并且Promise对象的状态值是resolved（成功的）
 export async function uploadImgsAsync(imgs) {
 
     let ossConfig = store.getState().ossConfig
@@ -78,13 +79,13 @@ export async function uploadImgsAsync(imgs) {
         }
         await ossuploadimgapi(requestConfig).then(response => {
             if (response.status === 200) {
-                console.log(`上传成功`)
+                console.log(`第${i + 1}/${imgs.length}张图片上传成功`)
                 console.log(fileName)
                 imgsArr.push(fileName)
             }
 
         }).catch(error => {
-            console.log(`上传失败`)
+            console.log(`第${i + 1}/${imgs.length}张图片上传失败:${JSON.stringify(error)}`)
         })
     }
 
@@ -92,8 +93,6 @@ export async function uploadImgsAsync(imgs) {
     console.log(imgsArr)
 
     return imgsArr
-
-
 
     // browser.js上传方式
     // let OSS = require('ali-oss')

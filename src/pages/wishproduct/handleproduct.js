@@ -101,7 +101,7 @@ function HandleProduct(props) {
     } // 备注的输入过程
 
     const [imgs, setImgs] = useState([]) // 商品图片数组
-    const [uploadImgsUrl, setUploadImgsUrl] = useState('') // 上传商品图片字符串
+    const [uploadImgsUrl, setUploadImgsUrl] = useState('') // 上传商品图片数组字符串
     const [loading, setLoading] = useState(false) // 是否正在加载
     const onImgChange = (files, type, index) => {
         console.log(files, type, index);
@@ -117,18 +117,21 @@ function HandleProduct(props) {
             setLoading(true)
             console.log(`开始提交数据`)
 
+            setUploadImgsUrl((oldValue) => ('你好啊'))
+            console.log(uploadImgsUrl)
+            setLoading(false)
+            return
+
             // 根据是否有图片进行提交图片操作
             // ...
             // 有图片存在 遍历图片进行
             if (imgs) {
-
-                console.log(uploadImgsUrl)
                 utils.uploadImgsAsync(imgs).then(imgsArr => {
-                    console.log(`上传完毕,返回结果为`)
+                    console.log(`业务功能图片上传完毕,返回结果为`)
                     console.log(imgsArr)
                     setLoading(false)
                     let tempimgs = imgsArr.join(',')
-                    setUploadImgsUrl(tempimgs)
+                    setUploadImgsUrl((oldValue) => (tempimgs))
                     console.log(uploadImgsUrl)
 
                     // 开始最终提交
