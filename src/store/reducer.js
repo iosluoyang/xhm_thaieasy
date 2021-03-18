@@ -19,7 +19,7 @@ let initialState = {
         configVersion: null,
         configDataArr: null,
         appName: 'ThaiEasy泰易贝',
-        imgUrl: 'https://procdn.xiaohemu.net/',
+        imgUrl: '',
         appDrawerOpen: false, // 全局左侧抽屉的开关
     },
     appUser: {
@@ -44,7 +44,11 @@ function ConfigReducer(appConfigState = initialState.appConfig, action) {
 
         // 更新配置文件数据
         case UPDATE_CONFIGARR:
-            return { ...appConfigState, ...{ configDataArr: action.data } }
+
+            // 获取图片前缀 imgUrl
+            let imgUrl = action.data.find(eachitem => { return eachitem.itemKey === 'imgUrlPrefix' }).itemVal || ''
+
+            return { ...appConfigState, ...{ configDataArr: action.data }, ...{ imgUrl: imgUrl } }
             break;
 
         // 更新全局抽屉的打开状态

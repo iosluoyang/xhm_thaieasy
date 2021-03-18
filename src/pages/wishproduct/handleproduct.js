@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
+import store from '@/store';
 import { Box, TextField, InputAdornment, Select, MenuItem, ListItemIcon, ListItemText, Avatar, Button, Typography, CircularProgress, } from '@material-ui/core';
 import { ImagePicker } from 'antd-mobile';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -13,7 +14,63 @@ import { FileCopy, Send } from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
 import utils from '@/utils';
 import { addproductapi } from '@/api/productapi'
-import { uploadImgs } from '../../utils/uploadImg';
+
+// 自定义上传图片的hook
+// ...
+function useUploadImgs(imgArr) {
+    // 根据是否有图片进行提交图片操作
+    // ...
+    // 有图片存在 遍历图片进行
+    if (imgArr) {
+
+        // 取出需要上传的图片
+        let recordIndexArr = []
+        let recordValueArr = []
+        imgArr.forEach((eachimg, index) => {
+            // 需要上传
+            if (eachimg instanceof Object && eachimg.file) {
+                recordIndexArr.push(index)
+                recordValueArr.push(eachimg)
+            }
+        })
+
+        let imgUrl = store.getState().appConfig.imgUrl
+
+        // 开始同步上传图片
+        utils.uploadImgsAsync(recordValueArr).then(imgurlArr => {
+
+            // 替换之前的图片数组
+            let oldimgs = [...imgArr]
+            imgurlArr.forEach((eachitem, index) => {
+                // 之前替换的索引
+                let replaceIndex = recordIndexArr[index]
+                // 要替换的值  替换为key为url值为实际地址的对象
+                let replaceValue = { url: eachitem }
+                // 进行替换
+                oldimgs.splice(replaceIndex, 1, replaceValue)
+            })
+
+            // 汇集上送图片字符串
+            let tempimgs = oldimgs.map(eachitem => (eachitem.url.indexOf(imgUrl) > -1 ? eachitem.url.replace(imgUrl, '') : eachitem.url)).join(',')
+            console.log(`当前所有图片的字符串拼接为${tempimgs}`)
+            let uploadImgs = tempimgs
+            let newimgs = oldimgs.map(eachitem => {
+                eachitem = eachitem.file || eachitem.url.indexOf(imgUrl) > -1 ? eachitem : { url: imgUrl + eachitem.url }
+                return eachitem
+            })
+
+            return { newimgs: newimgs, imgStr: uploadImgs }
+
+        }).catch(error => {
+            utils.showToast(`${error.msg}`, 'error')
+            return { newimgs: [], imgStr: '' }
+        })
+    }
+    else {
+        return { newimgs: [], imgStr: '' }
+    }
+
+}
 
 function HandleProduct(props) {
 
@@ -100,8 +157,8 @@ function HandleProduct(props) {
         setRemarkError(e.target.value === '')
     } // 备注的输入过程
 
-    const [imgs, setImgs] = useState([]) // 商品图片数组
-    const [uploadImgsUrl, setUploadImgsUrl] = useState('') // 上传商品图片数组字符串
+    const [imgs, setImgs] = useState([]) // 商品图片数组  固定为[{url: xxx}]的形式
+    let uploadImgs = '' // 上传后台的图片字符串
     const [loading, setLoading] = useState(false) // 是否正在加载
     const onImgChange = (files, type, index) => {
         console.log(files, type, index);
@@ -115,37 +172,59 @@ function HandleProduct(props) {
         if (!loading) {
 
             setLoading(true)
-            console.log(`开始提交数据`)
-
-            setUploadImgsUrl((oldValue) => ('你好啊'))
-            console.log(uploadImgsUrl)
-            setLoading(false)
-            return
 
             // 根据是否有图片进行提交图片操作
             // ...
             // 有图片存在 遍历图片进行
             if (imgs) {
-                utils.uploadImgsAsync(imgs).then(imgsArr => {
-                    console.log(`业务功能图片上传完毕,返回结果为`)
-                    console.log(imgsArr)
+
+                // 取出需要上传的图片
+                let recordIndexArr = []
+                let recordValueArr = []
+                imgs.forEach((eachimg, index) => {
+                    // 需要上传
+                    if (eachimg instanceof Object && eachimg.file) {
+                        recordIndexArr.push(index)
+                        recordValueArr.push(eachimg)
+                    }
+                })
+                utils.uploadImgsAsync(recordValueArr).then(imgsArr => {
+
+                    // 替换之前的图片数组
+                    let oldimgs = [...imgs]
+                    imgsArr.forEach((eachitem, index) => {
+                        // 之前替换的索引
+                        let replaceIndex = recordIndexArr[index]
+                        // 要替换的值  替换为key为url值为实际地址的对象
+                        let replaceValue = { url: eachitem }
+                        // 进行替换
+                        oldimgs.splice(replaceIndex, 1, replaceValue)
+                    })
+
+                    // 汇集上送图片字符串
+                    let tempimgs = oldimgs.map(eachitem => (eachitem.url.indexOf(props.appConfig.imgUrl) > -1 ? eachitem.url.replace(props.appConfig.imgUrl, '') : eachitem.url)).join(',')
+                    console.log(`当前所有图片的字符串拼接为${tempimgs}`)
+                    uploadImgs = tempimgs
+                    let newimgs = oldimgs.map(eachitem => {
+                        eachitem = eachitem.file || eachitem.url.indexOf(props.appConfig.imgUrl) > -1 ? eachitem : { url: props.appConfig.imgUrl + eachitem.url }
+                        return eachitem
+                    })
+                    console.log(newimgs)
+                    setImgs(newimgs)
+
                     setLoading(false)
-                    let tempimgs = imgsArr.join(',')
-                    setUploadImgsUrl((oldValue) => (tempimgs))
-                    console.log(uploadImgsUrl)
 
                     // 开始最终提交
                     finalSubmit()
 
                 }).catch(error => {
                     setLoading(false)
+                    utils.showToast(`${error.msg}`, 'error')
                 })
             }
 
         }
-
     }
-
 
     // 最终提交数据
     const finalSubmit = () => {
@@ -188,19 +267,19 @@ function HandleProduct(props) {
             link: link,
             linkType: linkType,
             remark: remark,
-            imgs: uploadImgsUrl,
+            imgs: uploadImgs,
             jobId: ''
         }
         console.log(data)
-        // addproductapi(data).then(response => {
-        //     setLoading(false)
-        //     history.replace('/wishproduct/productlist')
-        //     utils.showToast(`${'提交成功'}`, 'success')
+        addproductapi(data).then(response => {
+            setLoading(false)
+            history.replace('/wishproduct/productlist')
+            utils.showToast(`${'提交成功'}`, 'success')
 
-        // }).catch(error => {
-        //     setLoading(false)
-        //     utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
-        // })
+        }).catch(error => {
+            setLoading(false)
+            utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
+        })
 
 
     }

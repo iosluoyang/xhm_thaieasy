@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Switch } from 'react-router-dom';
 import routes from '@/router';
 import { LinearProgress } from '@material-ui/core';
@@ -8,6 +8,8 @@ import GlobalSnackbar from '@/components/globalSnackbar';
 import GlobalDialog from "@/components/globalDialog";
 import GlobalLoading from '@/components/globalLoading';
 import AuthRoute from '@/components/AuthRoute';
+import store from './store';
+import { actionGetConfigData } from './store/actionCreator'
 
 function App() {
 
@@ -18,6 +20,17 @@ function App() {
   }))
 
   const classes = useStyles()
+
+  useEffect(() => {
+
+    // 获取配置信息
+    store.dispatch(actionGetConfigData()).then(configData => {
+      console.log(`获取配置信息成功:${JSON.stringify(configData)}`)
+    }).catch(error => {
+      console.log(`获取配置信息失败:${error.msg}`)
+    })
+
+  }, [])
 
   return (
 
