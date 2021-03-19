@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import store from '@/store';
 import { Box, TextField, InputAdornment, Select, MenuItem, ListItemIcon, ListItemText, Avatar, Button, Typography, CircularProgress, } from '@material-ui/core';
@@ -13,7 +13,7 @@ import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import { FileCopy, Send } from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
 import utils from '@/utils';
-import { addproductapi } from '@/api/productapi'
+import { addproductapi, getproductdetailapi } from '@/api/productapi'
 
 // 自定义上传图片的hook
 // ...
@@ -74,6 +74,8 @@ function useUploadImgs(imgArr) {
 
 function HandleProduct(props) {
 
+    const location = useLocation()
+    const search = location.search
     const params = useParams()
     let owntype = params.type || 'add'
     const history = useHistory()
@@ -285,6 +287,35 @@ function HandleProduct(props) {
     }
 
     useEffect(() => {
+
+        // 如果是编辑或者拷贝状态的话则请求商品详情数据
+        if (owntype === 'edit' || owntype === 'copy') {
+            let params = utils.queryString.parse(search)
+            getproductdetailapi({ pid: params.pid }).then(response => {
+                // 获取详情数据成功
+                let productInfo = response.data
+                setProName(productInfo.title)
+                setLinkType(parseInt(productInfo.linkType))
+                setLink(productInfo.link)
+                setRemark(productInfo.remark)
+                setImgs(() => {
+                    let imgs = productInfo.imgs.split(',')
+                    let newimgs = []
+                    imgs.forEach(eachitem => {
+                        newimgs.push({
+                            url: props.appConfig.imgUrl + eachitem
+                        })
+                    })
+
+                    return newimgs
+
+                })
+
+            }).catch(error => {
+                // 获取详情数据失败
+                utils.showToast(error.msg, 'error')
+            })
+        }
 
     }, [])
 

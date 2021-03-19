@@ -157,7 +157,8 @@ function NavBar(props) {
     }
 
     const startToSearch = () => {
-        if (searchText) props.onStartToSearch(searchText)
+        // if (searchText) props.onStartToSearch(searchText)
+        props.onStartToSearch(searchText)
     }
 
     const [anchorEl, setAnchorEl] = useState(null)
@@ -226,7 +227,7 @@ function NavBar(props) {
                                     input: classes.inputInput,
                                 }}
                                 inputProps={{ 'aria-label': 'search' }}
-                                endAdornment={searchText && <TelegramIcon position='end' onClick={startToSearch} />}
+                                endAdornment={<TelegramIcon position='end' onClick={startToSearch} />}
                             />
                         </div>
                     }

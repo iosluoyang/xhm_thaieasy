@@ -1,16 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { Box, AppBar, Tabs, Tab, List, ListItem, ListItemAvatar, ListItemText, Fab, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
+import utils from '@/utils';
+import { Add } from '@material-ui/icons';
 
-import NavBar from "../../components/layout/navbar";
+import NavBar from "@/components/layout/navbar";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import 'swiper/components/effect-cube/effect-cube.scss';
+import { getproductlistapi } from '@/api/productapi';
 
+
+// 自定义hook实现
+const useSyncCallback = callback => {
+    const [proxyState, setProxyState] = useState({ current: false })
+
+    const Func = useCallback(() => {
+        setProxyState({ current: true })
+    }, [proxyState])
+
+    useEffect(() => {
+        if (proxyState.current === true) setProxyState({ current: false })
+    }, [proxyState])
+
+    useEffect(() => {
+        proxyState.current && callback()
+    })
+
+    return Func
+}
 
 function WishProduct(props) {
 
@@ -43,6 +64,7 @@ function WishProduct(props) {
                 '& .img': {
                     width: theme.spacing(10),
                     height: theme.spacing(10),
+                    marginRight: theme.spacing(2),
                     objectFit: 'cover',
                     borderRadius: '5px'
                 }
@@ -61,31 +83,131 @@ function WishProduct(props) {
 
     const classes = useStyles()
 
-    const startToSearch = (searchText) => {
-        console.log(`开始搜索,搜索文本为${searchText}`)
+    let searchText = ''
+    const startToSearch = (searchContent) => {
+        console.log(`开始搜索,搜索文本为${searchContent}`)
+        searchText = searchContent
+        // 加载商品列表数据
+        loadData(true)
+    }
+
+    let initPageInfo = {
+        pageNum: 1,
+        pageSize: 10,
+        date: ''
     }
 
     let owntabs = [
         {
             title: `${'全部'}`,
-            type: -1
+            type: -1,
+            dataList: [],
+            loaded: false,
+            pageInfo: initPageInfo
         },
         {
             title: `${'任务中'}`,
-            type: 0
+            type: 0,
+            dataList: [],
+            loaded: false,
+            pageInfo: initPageInfo
         },
         {
             title: `${'未添加任务'}`,
-            type: 1
+            type: 1,
+            dataList: [],
+            loaded: false,
+            pageInfo: initPageInfo
         }
     ]
 
     const [tabs, setTabs] = useState(owntabs)
-    const [currentTab, setCurrentTab] = useState(0)
+    const [currentTabIndex, setCurrentTabIndex] = useState(0)
     const handleChangeTab = (event, index) => {
-        setCurrentTab(index)
+        setCurrentTabIndex(index)
         if (swiper) swiper.slideTo(index, 300)
+        loadData()
     }
+
+    // 加载当前数据
+    const loadData = (refresh) => {
+
+        // 获取商品列表数据
+        // 获取当前tab对象
+        let currentTab = tabs[currentTabIndex]
+        let jobFlag = currentTab.type
+        let ifloaded = currentTab.loaded
+        let pageInfo = currentTab.pageInfo
+
+        // 如果没有加载过则进行加载
+        if (!ifloaded || true) {
+
+            // 如果为刷新状态则重置pageInfo为初始状态
+            if (refresh) {
+                setTabs((oldTabs) => {
+                    let temptabs = [...oldTabs]
+                    temptabs.forEach((eachtab) => {
+                        if (eachtab.type === jobFlag) {
+                            eachtab.pageInfo = initPageInfo
+                        }
+                    })
+                    return temptabs
+                })
+
+                // refresh之后重新赋值pageInfo  由于setState为异步 故此处会出现取值错误的问题...
+                // pageInfo = tabs[currentTabIndex].pageInfo
+                pageInfo.pageNum = 1
+                pageInfo.date = ''
+            }
+            let data = {
+                ...{ title: searchText },
+                ...{ account: '' }, // 某个客服的特定商品
+                ...{ email: '' }, // 某个用户的特定商品
+                ...{ jobFlag: jobFlag },
+                ...pageInfo,
+            }
+
+            console.log(`上送的参数为:${JSON.stringify(data)}`)
+
+            getproductlistapi(data).then(response => {
+                // 获取列表成功
+                let list = response.data.list || []
+                let date = response.data.date
+                console.log(`获取到的数据为:`)
+                console.log(list)
+
+                setTabs((oldTabs) => {
+                    let temptabs = [...oldTabs]
+                    temptabs.forEach((eachtab) => {
+                        if (eachtab.type === jobFlag) {
+                            let pageInfo = eachtab.pageInfo
+                            let templist = eachtab.dataList
+                            if (pageInfo.pageNum === 1) {
+                                pageInfo.date = date
+                                templist = []
+                            }
+                            eachtab.dataList = templist.concat(list)
+                            eachtab.loaded = true
+                            pageInfo.pageNum = pageInfo.pageNum + 1 // 页码加1
+                        }
+                    })
+                    return temptabs
+                })
+
+            }).catch(error => {
+                utils.showToast(error.msg, 'error')
+            })
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        // 获取商品列表数据
+        loadData()
+
+    }, [])
 
     const [swiper, setSwiper] = useState(null)
 
@@ -102,7 +224,7 @@ function WishProduct(props) {
             {/* Tab栏 */}
             <AppBar position='sticky' className={classes.filterPanel} color='default'>
 
-                <Tabs value={currentTab} onChange={handleChangeTab} indicatorColor='primary' variant='fullWidth'>
+                <Tabs value={currentTabIndex} onChange={handleChangeTab} indicatorColor='primary' variant='fullWidth'>
 
                     {
                         tabs.map((eachitem, index) => {
@@ -118,31 +240,44 @@ function WishProduct(props) {
 
             {/* 商品列表 */}
             <Swiper
-                initialSlide={currentTab}
+                initialSlide={currentTabIndex}
                 autoplay={false}
                 className={classes.swiper}
                 spaceBetween={0}
                 slidesPerView={1}
                 onInit={(swiper) => { setSwiper(swiper) }}
-                onSlideChange={(swiper) => { setCurrentTab(swiper.realIndex) }}
+                onSlideChange={(swiper) => { setCurrentTabIndex(swiper.realIndex) }}
             >
 
                 {
                     tabs.map((eachitem, index) => {
                         return (
                             <SwiperSlide key={eachitem.type} className='eachslide'>
-                                <Box textAlign='center' marginTop={2}>{`我是第${index}个页面`}</Box>
                                 <List className={classes.proList}>
                                     {
-                                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((eachitem, index) => {
+                                        eachitem.dataList && eachitem.dataList.length > 0 &&
+                                        eachitem.dataList.map((eachitem) => {
                                             return (
-                                                <ListItem className='eachpro' divider button key={index}>
-                                                    <ListItemAvatar>
-                                                        <img className='img' src={props.appConfig.imgUrl + 'cjsq_img/common/xhm_w220_h146_7b8184698e6f42d98b0d50b9a690d4ce.jpg'}></img>
-                                                    </ListItemAvatar>
-                                                    <ListItemText primary={`商品${index}`}>
+                                                <ListItem className='eachpro' divider button key={eachitem.pid}>
+
+                                                    {/* 商品图片 */}
+                                                    {
+                                                        eachitem.imgs && eachitem.imgs.split(',').length > 0 &&
+                                                        <ListItemAvatar>
+                                                            <img className='img' alt={eachitem.title} src={props.appConfig.imgUrl + eachitem.imgs.split(',')[0]}></img>
+                                                        </ListItemAvatar>
+                                                    }
+
+                                                    {/* 商品标题和备注 */}
+                                                    <ListItemText primary={eachitem.title} secondary={eachitem.remark}>
 
                                                     </ListItemText>
+
+                                                    {/* 操作按钮 */}
+                                                    {
+
+                                                    }
+
                                                 </ListItem>
                                             )
                                         })
@@ -157,7 +292,7 @@ function WishProduct(props) {
 
             {/* 浮动按钮 */}
             <Fab className={classes.fabBtn} color="primary" aria-label="add">
-                <AddIcon onClick={toAddPro} />
+                <Add onClick={toAddPro} />
             </Fab>
 
         </Box>
