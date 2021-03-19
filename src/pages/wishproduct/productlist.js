@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { Box, AppBar, Tabs, Tab, List, ListItem, ListItemAvatar, ListItemText, Fab, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import utils from '@/utils';
 import { Add } from '@material-ui/icons';
-
 import NavBar from "@/components/layout/navbar";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.scss';
@@ -36,6 +35,7 @@ const useSyncCallback = callback => {
 function WishProduct(props) {
 
     const history = useHistory()
+    const ref = useRef({ swiper: null })
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -125,7 +125,7 @@ function WishProduct(props) {
     const [currentTabIndex, setCurrentTabIndex] = useState(0)
     const handleChangeTab = (event, index) => {
         setCurrentTabIndex(index)
-        if (swiper) swiper.slideTo(index, 300)
+        if (ref.current && ref.current.swiper) ref.current.swiper.slideTo(index, 300)
         loadData()
     }
 
@@ -134,7 +134,7 @@ function WishProduct(props) {
 
         // 获取商品列表数据
         // 获取当前tab对象
-        let currentTab = tabs[currentTabIndex]
+        let currentTab = { ...tabs[currentTabIndex] } // 深拷贝对象
         let jobFlag = currentTab.type
         let ifloaded = currentTab.loaded
         let pageInfo = currentTab.pageInfo
@@ -144,20 +144,7 @@ function WishProduct(props) {
 
             // 如果为刷新状态则重置pageInfo为初始状态
             if (refresh) {
-                setTabs((oldTabs) => {
-                    let temptabs = [...oldTabs]
-                    temptabs.forEach((eachtab) => {
-                        if (eachtab.type === jobFlag) {
-                            eachtab.pageInfo = initPageInfo
-                        }
-                    })
-                    return temptabs
-                })
-
-                // refresh之后重新赋值pageInfo  由于setState为异步 故此处会出现取值错误的问题...
-                // pageInfo = tabs[currentTabIndex].pageInfo
-                pageInfo.pageNum = 1
-                pageInfo.date = ''
+                pageInfo = initPageInfo
             }
             let data = {
                 ...{ title: searchText },
@@ -174,25 +161,23 @@ function WishProduct(props) {
                 let list = response.data.list || []
                 let date = response.data.date
                 console.log(`获取到的数据为:`)
-                console.log(list)
+                console.log(response)
 
                 setTabs((oldTabs) => {
-                    let temptabs = [...oldTabs]
-                    temptabs.forEach((eachtab) => {
-                        if (eachtab.type === jobFlag) {
-                            let pageInfo = eachtab.pageInfo
-                            let templist = eachtab.dataList
-                            if (pageInfo.pageNum === 1) {
-                                pageInfo.date = date
-                                templist = []
-                            }
-                            eachtab.dataList = templist.concat(list)
-                            eachtab.loaded = true
-                            pageInfo.pageNum = pageInfo.pageNum + 1 // 页码加1
-                        }
-                    })
-                    return temptabs
+                    let tempTabs = [...oldTabs]
+                    let tempCurTab = tempTabs[currentTabIndex]
+                    tempCurTab.dataList = refresh ? list : tempCurTab.dataList.concat(list)
+                    tempCurTab.loaded = true
+                    tempCurTab.pageInfo = {
+                        pageNum: refresh ? initPageInfo.pageNum : tempCurTab.pageInfo.pageNum + 1,
+                        pageSize: tempCurTab.pageInfo.pageSize,
+                        date: refresh ? initPageInfo.date : tempCurTab.pageInfo.date
+                    }
+                    return tempTabs
                 })
+
+                console.log(`变更后的tabs数据为`)
+                console.log(tabs)
 
             }).catch(error => {
                 utils.showToast(error.msg, 'error')
@@ -209,7 +194,7 @@ function WishProduct(props) {
 
     }, [])
 
-    const [swiper, setSwiper] = useState(null)
+    // const [swiper, setSwiper] = useState(null)
 
     const toAddPro = () => {
         history.push('/wishproduct/handleproduct/add')
@@ -227,7 +212,7 @@ function WishProduct(props) {
                 <Tabs value={currentTabIndex} onChange={handleChangeTab} indicatorColor='primary' variant='fullWidth'>
 
                     {
-                        tabs.map((eachitem, index) => {
+                        owntabs.map((eachitem, index) => {
                             return (
                                 <Tab label={eachitem.title} key={index}></Tab>
                             )
@@ -245,7 +230,7 @@ function WishProduct(props) {
                 className={classes.swiper}
                 spaceBetween={0}
                 slidesPerView={1}
-                onInit={(swiper) => { setSwiper(swiper) }}
+                onInit={(swiper) => { ref.current.swiper = swiper }}
                 onSlideChange={(swiper) => { setCurrentTabIndex(swiper.realIndex) }}
             >
 
@@ -253,6 +238,7 @@ function WishProduct(props) {
                     tabs.map((eachitem, index) => {
                         return (
                             <SwiperSlide key={eachitem.type} className='eachslide'>
+                                {/* <Box textAlign='center'>{JSON.stringify(eachitem)}</Box> */}
                                 <List className={classes.proList}>
                                     {
                                         eachitem.dataList && eachitem.dataList.length > 0 &&
