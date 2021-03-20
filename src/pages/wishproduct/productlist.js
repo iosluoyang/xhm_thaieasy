@@ -122,9 +122,11 @@ function WishProduct(props) {
     ]
 
     const [tabs, setTabs] = useState(owntabs)
-    const [currentTabIndex, setCurrentTabIndex] = useState(0)
+    let initTabIndex = 0
+    const [currentTabIndex, setCurrentTabIndex] = useState(initTabIndex)
     const handleChangeTab = (event, index) => {
         setCurrentTabIndex(index)
+        initTabIndex = index
         if (ref.current && ref.current.swiper) ref.current.swiper.slideTo(index, 300)
         loadData()
     }
@@ -134,18 +136,20 @@ function WishProduct(props) {
 
         // 获取商品列表数据
         // 获取当前tab对象
-        let currentTab = { ...tabs[currentTabIndex] } // 深拷贝对象
+        let currentTab = { ...tabs[initTabIndex] } // 深拷贝对象
         let jobFlag = currentTab.type
-        let ifloaded = currentTab.loaded
+        let loaded = currentTab.loaded
         let pageInfo = currentTab.pageInfo
 
-        // 如果没有加载过则进行加载
-        if (!ifloaded || true) {
+        // 如果为刷新状态则重置pageInfo为初始状态
+        if (refresh) {
+            loaded = false
+            pageInfo = initPageInfo
+        }
 
-            // 如果为刷新状态则重置pageInfo为初始状态
-            if (refresh) {
-                pageInfo = initPageInfo
-            }
+        // 如果没有加载过则进行加载
+        if (!loaded) {
+
             let data = {
                 ...{ title: searchText },
                 ...{ account: '' }, // 某个客服的特定商品
@@ -160,18 +164,16 @@ function WishProduct(props) {
                 // 获取列表成功
                 let list = response.data.list || []
                 let date = response.data.date
-                console.log(`获取到的数据为:`)
-                console.log(response)
 
                 setTabs((oldTabs) => {
                     let tempTabs = [...oldTabs]
-                    let tempCurTab = tempTabs[currentTabIndex]
-                    tempCurTab.dataList = refresh ? list : tempCurTab.dataList.concat(list)
+                    let tempCurTab = tempTabs[initTabIndex]
+                    tempCurTab.dataList = pageInfo.pageNum === 1 ? list : tempCurTab.dataList.concat(list)
                     tempCurTab.loaded = true
                     tempCurTab.pageInfo = {
-                        pageNum: refresh ? initPageInfo.pageNum : tempCurTab.pageInfo.pageNum + 1,
-                        pageSize: tempCurTab.pageInfo.pageSize,
-                        date: refresh ? initPageInfo.date : tempCurTab.pageInfo.date
+                        pageNum: pageInfo.pageNum + 1,
+                        pageSize: pageInfo.pageSize,
+                        date: pageInfo.pageNum === 1 ? date : pageInfo.date
                     }
                     return tempTabs
                 })
