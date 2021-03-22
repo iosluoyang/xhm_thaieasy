@@ -13,7 +13,7 @@ import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import { FileCopy, Send } from '@material-ui/icons';
 import { green } from '@material-ui/core/colors';
 import utils from '@/utils';
-import { addproductapi, getproductdetailapi } from '@/api/productapi'
+import { addproductapi, getproductdetailapi, editproductapi } from '@/api/productapi'
 
 // 自定义上传图片的hook
 // ...
@@ -75,10 +75,13 @@ function useUploadImgs(imgArr) {
 function HandleProduct(props) {
 
     const location = useLocation()
-    const search = location.search
+
     const params = useParams()
     let owntype = params.type || 'add'
     const history = useHistory()
+
+    const search = location.search
+    let searchDict = utils.queryString.parse(search)
 
     // 页面类型 type: add为新增  edit为编辑 copy为拷贝
     const [type, setType] = useState(owntype)
@@ -272,16 +275,40 @@ function HandleProduct(props) {
             imgs: uploadImgs,
             jobId: ''
         }
-        console.log(data)
-        addproductapi(data).then(response => {
-            setLoading(false)
-            history.replace('/wishproduct/productlist')
-            utils.showToast(`${'提交成功'}`, 'success')
 
-        }).catch(error => {
-            setLoading(false)
-            utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
-        })
+        // 根据新增还是编辑进行不同接口的调用
+        if (type === 'add' || type === 'copy') {
+
+            console.log(data)
+
+            addproductapi(data).then(response => {
+                setLoading(false)
+                history.replace('/wishproduct/productlist')
+                utils.showToast(`${'提交成功'}`, 'success')
+
+            }).catch(error => {
+                setLoading(false)
+                utils.showToast(`${'提交失败:'}${JSON.stringify(error.msg || error)}`, 'error')
+            })
+        }
+        else if (type === 'edit') {
+            data['pid'] = searchDict.pid
+            console.log(data)
+
+            editproductapi(data).then(response => {
+                // 编辑成功
+                setLoading(false)
+                history.goBack()
+                utils.showToast(`${'编辑成功'}`, 'success')
+            }).catch(error => {
+                setLoading(false)
+                utils.showToast(`${'编辑失败:'}${JSON.stringify(error.msg || error)}`, 'error')
+            })
+        }
+
+        else {
+            utils.showToast(`${'错误的页面类型'}`, 'error')
+        }
 
 
     }
@@ -290,8 +317,7 @@ function HandleProduct(props) {
 
         // 如果是编辑或者拷贝状态的话则请求商品详情数据
         if (owntype === 'edit' || owntype === 'copy') {
-            let params = utils.queryString.parse(search)
-            getproductdetailapi({ pid: params.pid }).then(response => {
+            getproductdetailapi({ pid: searchDict.pid }).then(response => {
                 // 获取详情数据成功
                 let productInfo = response.data
                 setProName(productInfo.title)
